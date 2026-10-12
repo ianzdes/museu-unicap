@@ -1,5 +1,5 @@
+{/* provavelmente remover toda essa pagina, antiga pagina de relatorios, se tornou um dropdownmenu */}
 import { useState } from 'react';
-
 export function ReportsPage() {
     // quanto entro na pagina, ela comeca com o valor null. definido por useState(null)
     const [selectedReport, setSelectedReport] = useState(null);

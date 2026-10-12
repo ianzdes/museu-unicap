@@ -5,8 +5,8 @@ export function Navbar({ onNavigate }) {
     const [isReportOpen, setIsReportOpen] = useState(false);
 
     const handleReportClick = (reportType) => {
+        onNavigate(`reports:${reportType}`);
         setIsReportOpen(false); // fecha dropdown
-        onNavigate(`reports:${reportType}`) // envia a rota especifica do relatorio
     };
     
     return (
@@ -28,7 +28,6 @@ export function Navbar({ onNavigate }) {
                     onMouseLeave={() => setIsReportOpen(false)}
                 >
                     <button
-                        onClick={() => onNavigate('reports')} // tirar depois a possibilidade de clicar nos relatorios em si, e só deixar a possibilidade de escolher as opcoes do dropdown
                         style={styles.navButton}
                     >
                         Relatórios
@@ -48,7 +47,7 @@ export function Navbar({ onNavigate }) {
                             </button>
 
                             <button
-                                onClick={() => handleReportClick('machine-utilization')}
+                                onClick={() => handleReportClick('machine-usage')}
                                 className="dropdown-item-hover"
                                 style={styles.dropdownItem}
                             >

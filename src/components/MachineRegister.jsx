@@ -48,11 +48,11 @@ export function MachineRegister() {
 
     return (
         <div style={styles.container}>
-            <h2>Register Machine</h2>
+            <h2>Registrar máquina</h2>
             <form onSubmit={handleSubmit} style={styles.form}>
 
                 <div style={styles.field}>
-                    <label style={styles.label}>Machine name/ id:</label>
+                    <label style={styles.label}>Nome/ID da máquina:</label>
                     <input
                         type="text"
                         value={name}
@@ -64,19 +64,19 @@ export function MachineRegister() {
                 </div>
 
                 <div style={styles.field}>
-                    <label style={styles.label}>Type:</label>
+                    <label style={styles.label}>Tipo:</label>
                     <select
                         value={type}
                         onChange={(e) => setType(e.target.value)}
                         style={styles.input}
                     >
-                        <option value="3d_printer">3D Printer</option>
-                        <option value="scanner">3D Scanner</option>
+                        <option value="3d_printer">Impressora 3D</option>
+                        <option value="scanner">Scanner 3D</option>
                     </select>
                 </div>
 
                 <div style={styles.field}>
-                    <label style={styles.label}>Model / Brand:</label>
+                    <label style={styles.label}>Modelo / Marca:</label>
                     <input
                         type="text"
                         value={model}
@@ -88,20 +88,20 @@ export function MachineRegister() {
                 </div>
 
                 <div style={styles.field}>
-                    <label style={styles.label}>Current Status:</label>
+                    <label style={styles.label}>Status atual:</label>
                     <select
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
                         style={styles.input}
                     >
-                        <option value="operational">Operational</option>
-                        <option value="maitenance">Maintenance</option>
-                        <option value="out_of_service">Out of Service</option>
+                        <option value="operational">Em funcionamento</option>
+                        <option value="maitenance">Em manutenção</option>
+                        <option value="out_of_service">Fora de serviço</option>
                     </select>
                 </div>
 
                 <div style={styles.field}>
-                    <label style={styles.label}>Last preventive maintenance:</label>
+                    <label style={styles.label}>Última manutenção preventiva:</label>
                     <input
                         type="date"
                         value={lastMaintenance}
@@ -111,7 +111,7 @@ export function MachineRegister() {
                 </div>
 
                 <button type="submit" style={styles.button}>
-                    Register Machine
+                    Registrar máquina
                 </button>
 
             </form>

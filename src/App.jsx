@@ -3,25 +3,49 @@ import { Navbar } from './components/Navbar';
 import { UserRegister } from './components/UserRegister';
 import { ContactPage } from './pages/ContactPage';
 import { MachinesPage } from './pages/MachinesPage';
-import { ReportsPage } from './pages/ReportsPage';
+import { FilamentReport } from './pages/FilamentReportPage';
+import { MachineUsage } from './pages/MachineUsage';
 
 function App() {
-  // estado pra controlar a tela atual, users ou contact
 
-  const [currentPage, setCurrentPage] = useState('users');
+  const [currentRoute, setCurrentRoute] = useState('users');
 
+  const renderContent = () => {
+
+    if (currentRoute.startsWith('reports:')) {
+
+      const reportType = currentRoute.split(':')[1];
+
+      switch (reportType) {
+        case 'filament-consumption':
+          return <FilamentReport />;
+
+        case 'machine-usage':
+          return <MachineUsage />;
+
+        default: 
+          return <div>Relatório não encontrado</div>
+      }
+    }
+    
+    switch (currentRoute) {
+      case 'users':
+        return <UserRegister />;
+
+      case 'contacts':
+        return <ContactPage />;
+
+      case 'machines':
+        return <MachinesPage />;
+    }
+  };
 
   return (
     <div>
-      {/* navbar vai ter a funcao setcurrentpage para alterar a tela */}
-      <Navbar onNavigate={setCurrentPage}/>
+      <Navbar onNavigate={setCurrentRoute} />
 
-      {/* conteudo principal */}
-      <main style={{ padding: '20px' }}>
-        {currentPage === 'users' && <UserRegister />}
-        {currentPage === 'contact' && <ContactPage />}
-        {currentPage === 'machines' && <MachinesPage />}
-        {currentPage === 'reports' && <ReportsPage />}
+      <main>
+        {renderContent()}
       </main>
     </div>
   );
