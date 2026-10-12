@@ -5,6 +5,8 @@ import { ContactPage } from './pages/ContactPage';
 import { MachinesPage } from './pages/MachinesPage';
 import { FilamentReport } from './pages/FilamentReportPage';
 import { MachineUsage } from './pages/MachineUsage';
+import { LoanHistory } from './pages/LoanHistory';
+import { MaintenanceHistory } from './pages/MaintenanceHistory';
 
 function App() {
 
@@ -22,6 +24,12 @@ function App() {
 
         case 'machine-usage':
           return <MachineUsage />;
+
+        case 'loan-history':
+          return <LoanHistory />;
+
+        case 'maintenance-history':
+          return <MaintenanceHistory />;
 
         default: 
           return <div>Relatório não encontrado</div>

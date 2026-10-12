@@ -55,7 +55,7 @@ export function Navbar({ onNavigate }) {
                             </button>
 
                             <button
-                                onClick={() => handleReportClick('loans')}
+                                onClick={() => handleReportClick('loan-history')}
                                 className="dropdown-item-hover"
                                 style={styles.dropdownItem}
                             >
@@ -63,7 +63,7 @@ export function Navbar({ onNavigate }) {
                             </button>
 
                             <button
-                                onClick={() => handleReportClick('maintenance')}
+                                onClick={() => handleReportClick('maintenance-history')}
                                 className="dropdown-item-hover"
                                 style={styles.dropdownItem}
                             >
