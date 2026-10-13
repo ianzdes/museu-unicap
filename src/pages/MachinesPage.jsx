@@ -1,4 +1,4 @@
-import { MachineRegister } from "../components/MachineRegister";
+import { MachineRegister } from "./MachineRegister";
 
 export function MachinesPage() {
     return (

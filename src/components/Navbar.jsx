@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 export function Navbar({ onNavigate }) {
-
+    
+    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
 
     const handleReportClick = (reportType) => {
@@ -17,10 +18,38 @@ export function Navbar({ onNavigate }) {
                     Usuários
                 </button>
 
-                <button onClick={() => onNavigate('machines')} style={styles.navButton}>
-                    Cadastro
-                </button>
+                <div
+                    style={styles.dropdownContainer}
+                    onMouseEnter={() => setIsRegisterOpen(true)}
+                    onMouseLeave={() => setIsRegisterOpen(false)}
+                >
+                    <button 
+                        style={styles.navButton}
+                    >
+                        Cadastro
+                    </button>
 
+                    {isRegisterOpen && (
+                        <div style={styles.dropdownMenu}>
+                            <button
+                                onClick={() => onNavigate('register:supplies')}
+                                className="dropdown-item-hover"
+                                style={styles.dropdownItem}
+                            >
+                                Suprimentos
+                            </button>
+
+                            <button
+                                onClick={() => onNavigate('register:machines')}
+                                className="dropdown-item-hover"
+                                style={styles.dropdownItem}
+                            >
+                                Máquinas (3D / Scanners)
+                            </button>
+                        </div>
+                    )}
+                </div>
+                
                 {/* container do dropdown de relatorios */}
                 <div 
                     style={styles.dropdownContainer}

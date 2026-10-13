@@ -7,12 +7,29 @@ import { FilamentReport } from './pages/FilamentReportPage';
 import { MachineUsage } from './pages/MachineUsage';
 import { LoanHistory } from './pages/LoanHistory';
 import { MaintenanceHistory } from './pages/MaintenanceHistory';
+import { SupplyRegister } from './pages/SupplyRegister';
+import { MachineRegister } from './pages/MachineRegister';
 
 function App() {
 
   const [currentRoute, setCurrentRoute] = useState('users');
 
   const renderContent = () => {
+
+    if (currentRoute.startsWith('register:')) {
+      const registerType = currentRoute.split(':')[1];
+
+      switch (registerType) {
+        case 'supplies':
+          return <SupplyRegister />
+
+        case 'machines':
+          return <MachineRegister />
+
+        default:
+          return <div>Cadastro não encontrado</div>;
+      }
+    }
 
     if (currentRoute.startsWith('reports:')) {
 
