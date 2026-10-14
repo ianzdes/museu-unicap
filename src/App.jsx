@@ -26,7 +26,7 @@ function App() {
           return <MachineRegister />
 
         default:
-          return <div>Cadastro não encontrado</div>;
+          return <div>Cadastro não encontrado.</div>;
       }
     }
 
@@ -48,7 +48,7 @@ function App() {
           return <MaintenanceHistory />;
 
         default: 
-          return <div>Relatório não encontrado</div>
+          return <div>Relatório não encontrado.</div>
       }
     }
     
