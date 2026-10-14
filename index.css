@@ -1,24 +1,20 @@
-/* 1. Configuração global de fonte e cores de fundo */
 body {
   margin: 0;
   font-family: "Roboto", sans-serif;
-  background-color: #f8fafc; /* Um fundo cinza-claro bem moderno */
-  color: #1e293b;            /* Cor padrão do texto (cinza escuro) */
+  background-color: #f8fafc;
+  color: #1e293b;
   -webkit-font-smoothing: antialiased;
 }
 
-/* 2. Reset básico para elementos comuns para evitar surpresas */
 * {
   box-sizing: border-box;
 }
 
-/* 3. Estilização padrão para botões globais do sistema (se quiser) */
 button {
   font-family: "Roboto", sans-serif;
   cursor: pointer;
 }
 
-/* 4. Barra de rolagem customizada (opcional, deixa com cara de sistema profissional) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;

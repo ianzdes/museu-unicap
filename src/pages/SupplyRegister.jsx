@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient';
 export function SupplyRegister() {
     const [formData, setFormData] = useState({
         name: '',
-        type: 'Filamento', // Filamento, Resina, etc.
+        type: 'Filamento', // filamento, resina, etc
         color: '',
         quantity: '',
         unit: 'g', // g ou kg
@@ -25,14 +25,12 @@ export function SupplyRegister() {
         setSuccessMessage('');
 
         try {
-            // Futuramente, salvaremos na tabela de suprimentos do Supabase aqui:
-            // const { error } = await supabase.from('supplies').insert([formData]);
-            // if (error) throw error;
+            // futuramente, tabela de suprimentos do supabase aqui
 
             console.log('Dados do suprimento:', formData);
             setSuccessMessage('Suprimento cadastrado com sucesso!');
             
-            // Limpa o formulário
+            // limpa o formulario
             setFormData({
                 name: '',
                 type: 'Filamento',

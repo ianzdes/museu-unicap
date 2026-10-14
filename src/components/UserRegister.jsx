@@ -40,12 +40,12 @@ export function UserRegister() {
 
     return (
         <div style={styles.card}>
-            <h2>Register User</h2>
+            <h2>Registrar usuário</h2>
 
             <form onSubmit={handleSubmit} style={styles.form}>
                 {/* campo de nome */}
                 <div style={styles.fieldGroup}>
-                    <label style={styles.label}>Full Name:</label>
+                    <label style={styles.label}>Nome Completo:</label>
                     <input
                         type="text"
                         value={name}
@@ -58,7 +58,7 @@ export function UserRegister() {
 
         {/* campo de email */}
         <div style={styles.fieldGroup}>
-            <label style={styles.label}>Email Address:</label>
+            <label style={styles.label}>Endereço de E-mail:</label>
             <input
                 type="email"
                 value={email}
@@ -70,7 +70,7 @@ export function UserRegister() {
         </div>
 
         <div style={styles.fieldGroup}>
-            <label style={styles.label}>User Role:</label>
+            <label style={styles.label}>Cargo:</label>
             <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
@@ -83,7 +83,7 @@ export function UserRegister() {
         </div>
 
         <button type="submit" style={styles.button}>
-            Register User
+            Registrar usuário
         </button>
     </form>
     </div>

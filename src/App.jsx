@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { UserRegister } from './components/UserRegister';
 import { ContactPage } from './pages/ContactPage';
-import { MachinesPage } from './pages/MachinesPage';
 import { FilamentReport } from './pages/FilamentReportPage';
 import { MachineUsage } from './pages/MachineUsage';
 import { LoanHistory } from './pages/LoanHistory';
@@ -60,8 +59,8 @@ function App() {
       case 'contacts':
         return <ContactPage />;
 
-      case 'machines':
-        return <MachinesPage />;
+      default:
+        return <div>Relatório não encontrado</div>
     }
   };
 
