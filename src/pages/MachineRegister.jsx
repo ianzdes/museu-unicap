@@ -11,13 +11,11 @@ export function MachineRegister() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        //validacao basica
         if (name.trim().length < 2) {
             alert('o nome da maquina deve ter no minimo 2 caracteres');
             return;
         }
 
-        // chamada assincrona ao supabase
         const { data, error } = await supabase
             .from('machines')
             .insert([

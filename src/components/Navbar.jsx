@@ -46,6 +46,14 @@ export function Navbar({ onNavigate }) {
                             >
                                 Máquinas (3D / Scanners)
                             </button>
+
+                            <button
+                                onClick={() => onNavigate('register:machine-loan')}
+                                className="dropdown-item-hover"
+                                style={styles.dropdownItem}
+                            >
+                                Equipamentos para empréstimo
+                            </button>
                         </div>
                     )}
                 </div>
