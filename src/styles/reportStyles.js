@@ -1,25 +1,47 @@
-export const reportStyles = {
+export const styles = {
+    // Layout Geral da Página
     container: {
-        padding: '20px',
-        maxWidth: '900px',
+        maxWidth: '1200px',
         margin: '0 auto',
+        padding: '20px',
+        fontFamily: 'sans-serif',
     },
-    header: {
-        marginBottom: '24px',
-        borderBottom: '2px solid #edf2f7',
-        paddingBottom: '12px',
+    headerRow: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: '20px',
+    },
+    miniCategory: {
+        fontSize: '11px',
+        fontWeight: 'bold',
+        color: '#8b0000',
+        letterSpacing: '1px',
     },
     title: {
-        fontSize: '24px',
-        fontWeight: '700',
-        color: '#1a202c',
-        margin: '0 0 6px 0',
+        fontSize: '28px',
+        fontWeight: 'bold',
+        color: '#1a1a1a',
+        margin: '4px 0',
     },
     subtitle: {
         fontSize: '14px',
-        color: '#718096',
-        margin: '0',
+        color: '#666',
+        margin: 0,
     },
+    newButton: {
+        backgroundColor: '#8b0000',
+        color: '#fff',
+        border: 'none',
+        padding: '10px 18px',
+        borderRadius: '8px',
+        fontWeight: 'bold',
+        fontSize: '14px',
+        cursor: 'pointer',
+        boxShadow: '0 2px 6px rgba(139,0,0,0.2)',
+    },
+
+    // Métricas e Cards Específicos de Relatórios
     metricGrid: {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -45,8 +67,10 @@ export const reportStyles = {
     metricValue: {
         fontSize: '28px',
         fontWeight: '700',
-        color: '#2b6cb0',
+        color: '#8b0000', // Alinhado com a cor primária do museu
     },
+
+    // Estados de Carregamento e Vazio
     loadingContainer: {
         textAlign: 'center',
         padding: '40px',
@@ -82,10 +106,191 @@ export const reportStyles = {
         color: '#a0aec0',
         margin: '0',
     },
+
+    // Tabelas e Filtros
+    tableCard: {
+        backgroundColor: '#fff',
+        border: '1px solid #e2e8f0',
+        borderRadius: '10px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+        padding: '20px',
+    },
+    filterBar: {
+        display: 'flex',
+        gap: '12px',
+        marginBottom: '20px',
+        flexWrap: 'wrap',
+    },
+    searchInput: {
+        flex: 2,
+        minWidth: '220px',
+        padding: '10px 14px',
+        borderRadius: '6px',
+        border: '1px solid #cbd5e1',
+        fontSize: '14px',
+    },
+    selectFilter: {
+        flex: 1,
+        minWidth: '140px',
+        padding: '10px',
+        borderRadius: '6px',
+        border: '1px solid #cbd5e1',
+        fontSize: '14px',
+        backgroundColor: '#fff',
+    },
     tableContainer: {
         backgroundColor: '#fff',
         borderRadius: '10px',
         border: '1px solid #e2e8f0',
         overflow: 'hidden',
-    }
+    },
+    table: {
+        width: '100%',
+        borderCollapse: 'collapse',
+        textAlign: 'left',
+    },
+    thRow: {
+        borderBottom: '2px solid #f1f5f9',
+    },
+    th: {
+        padding: '12px 10px',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        color: '#64748b',
+        letterSpacing: '0.5px',
+    },
+    tr: {
+        borderBottom: '1px solid #f1f5f9',
+    },
+    td: {
+        padding: '14px 10px',
+        fontSize: '14px',
+        color: '#334155',
+    },
+
+    // Badges / Status
+    badgeActive: {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        backgroundColor: '#dcfce7',
+        color: '#166534',
+        padding: '4px 10px',
+        borderRadius: '20px',
+        fontSize: '12px',
+        fontWeight: '500',
+    },
+    badgeInactive: {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        backgroundColor: '#fee2e2',
+        color: '#991b1b',
+        padding: '4px 10px',
+        borderRadius: '20px',
+        fontSize: '12px',
+        fontWeight: '500',
+    },
+    badgeWarning: {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        backgroundColor: '#fef3c7',
+        color: '#b45309',
+        padding: '4px 10px',
+        borderRadius: '20px',
+        fontSize: '12px',
+        fontWeight: '500',
+    },
+    badgeInfo: {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        backgroundColor: '#e0f2fe',
+        color: '#0369a1',
+        padding: '4px 10px',
+        borderRadius: '20px',
+        fontSize: '12px',
+        fontWeight: '500',
+    },
+
+    // Botões de Ação
+    actionBtn: {
+        backgroundColor: 'transparent',
+        border: '1px solid #cbd5e1',
+        color: '#8b0000',
+        padding: '6px 12px',
+        borderRadius: '6px',
+        fontSize: '13px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+    },
+    successBtn: {
+        backgroundColor: '#27ae60',
+        border: 'none',
+        color: '#fff',
+        padding: '6px 12px',
+        borderRadius: '6px',
+        fontSize: '13px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+    },
+
+    // Formulários
+    card: {
+        maxWidth: '450px',
+        margin: '20px auto',
+        padding: '24px',
+        backgroundColor: '#fff',
+        border: '1px solid #e2e8f0',
+        borderRadius: '10px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        fontFamily: 'sans-serif',
+    },
+    formHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '20px',
+    },
+    backButton: {
+        background: 'none',
+        border: 'none',
+        color: '#64748b',
+        cursor: 'pointer',
+        fontSize: '13px',
+        fontWeight: '500',
+    },
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+    },
+    fieldGroup: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '6px',
+    },
+    label: {
+        fontWeight: 'bold',
+        fontSize: '13px',
+        color: '#334155',
+    },
+    input: {
+        padding: '10px',
+        borderRadius: '6px',
+        border: '1px solid #cbd5e1',
+        fontSize: '14px',
+    },
+    submitButton: {
+        padding: '12px',
+        backgroundColor: '#8b0000',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '6px',
+        fontSize: '15px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        marginTop: '10px',
+    },
 };

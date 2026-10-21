@@ -1,234 +1,300 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
+import { styles } from '../styles/reportStyles';
 
 export function SupplyRegister() {
-    const [formData, setFormData] = useState({
-        name: '',
-        type: 'Filamento', // filamento, resina, etc
-        color: '',
-        quantity: '',
-        unit: 'g', // g ou kg
-        minStock: ''
-    });
+    const [view, setView] = useState('list'); 
+    
+    const [supplies, setSupplies] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [materialFilter, setMaterialFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
 
-    const [loading, setLoading] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
+    const [name, setName] = useState('');
+    const [material, setMaterial] = useState('PLA');
+    const [color, setColor] = useState('');
+    const [purchaseKg, setPurchaseKg] = useState('1');
+    const [currentStockGrams, setCurrentStockGrams] = useState('1000');
+    const [status, setStatus] = useState('Em Estoque');
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    useEffect(() => {
+        fetchSupplies();
+    }, []);
+
+    const fetchSupplies = async () => {
+        setLoading(true);
+        const { data, error } = await supabase
+            .from('supplies')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Erro ao buscar suprimentos:', error.message);
+        } else {
+            setSupplies(data || []);
+        }
+        setLoading(false);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setSuccessMessage('');
 
-        try {
-            // futuramente, tabela de suprimentos do supabase aqui
+        if (name.trim().length < 2) {
+            alert("O nome do insumo deve ter no mínimo 2 caracteres.");
+            return;
+        }
 
-            console.log('Dados do suprimento:', formData);
-            setSuccessMessage('Suprimento cadastrado com sucesso!');
-            
-            // limpa o formulario
-            setFormData({
-                name: '',
-                type: 'Filamento',
-                color: '',
-                quantity: '',
-                unit: 'g',
-                minStock: ''
-            });
-        } catch (error) {
-            console.error('Erro ao cadastrar:', error.message);
-        } finally {
-            setLoading(false);
+        setSubmitting(true);
+
+        const stockInGrams = Number(currentStockGrams) || (Number(purchaseKg) * 1000);
+
+        const { error } = await supabase
+            .from('supplies')
+            .insert([
+                {
+                    name,
+                    material,
+                    color: color || 'Padrão',
+                    purchase_kg: Number(purchaseKg),
+                    current_stock_grams: stockInGrams,
+                    status: stockInGrams <= 200 ? 'Baixo Estoque' : status
+                }
+            ]);
+
+        setSubmitting(false);
+
+        if (error) {
+            alert(`Erro ao registrar insumo: ${error.message}`);
+        } else {
+            alert(`Insumo "${name}" cadastrado com sucesso!`);
+            setName('');
+            setMaterial('PLA');
+            setColor('');
+            setPurchaseKg('1');
+            setCurrentStockGrams('1000');
+            setStatus('Em Estoque');
+            setView('list');
+            fetchSupplies();
         }
     };
 
-    return (
-        <div style={styles.container}>
-            <div style={styles.header}>
-                <h2 style={styles.title}>Cadastro de Suprimentos</h2>
-                <p style={styles.subtitle}>Adicione novos materiais e insumos de impressão 3D ao inventário do museu.</p>
-            </div>
+    const filteredSupplies = supplies.filter((item) => {
+        const matchesSearch = item.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              item.color?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                              item.material?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesMaterial = materialFilter === 'all' || item.material === materialFilter;
+        const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
 
-            {successMessage && (
-                <div style={styles.successAlert}>
-                    {successMessage}
-                </div>
-            )}
+        return matchesSearch && matchesMaterial && matchesStatus;
+    });
 
-            <form onSubmit={handleSubmit} style={styles.formCard}>
-                <div style={styles.inputGroup}>
-                    <label style={styles.label}>Nome do Suprimento / Material</label>
-                    <input 
-                        type="text" 
-                        name="name" 
-                        value={formData.name} 
-                        onChange={handleChange} 
-                        placeholder="Ex: PLA Vermelho 1.75mm" 
-                        required 
-                        style={styles.input}
-                    />
+    if (view === 'form') {
+        return (
+            <div style={styles.card}>
+                <div style={styles.formHeader}>
+                    <h2>Novo Suprimento / Insumo</h2>
+                    <button onClick={() => setView('list')} style={styles.backButton}>
+                        ← Voltar para a lista
+                    </button>
                 </div>
 
-                <div style={styles.rowGrid}>
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label}>Tipo de Insumo</label>
-                        <select 
-                            name="type" 
-                            value={formData.type} 
-                            onChange={handleChange} 
+                <form onSubmit={handleSubmit} style={styles.form}>
+                    <div style={styles.fieldGroup}>
+                        <label style={styles.label}>Nome do Suprimento / Filamento:</label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            style={styles.input}
+                            placeholder="Ex: Filamento PLA Premium 1.75mm"
+                        /> 
+                    </div>
+
+                    <div style={styles.fieldGroup}>
+                        <label style={styles.label}>Tipo de Material:</label>
+                        <select
+                            value={material}
+                            onChange={(e) => setMaterial(e.target.value)}
                             style={styles.input}
                         >
-                            <option value="Filamento">Filamento</option>
-                            <option value="Resina">Resina</option>
+                            <option value="PLA">PLA</option>
+                            <option value="ABS">ABS</option>
+                            <option value="PETG">PETG</option>
+                            <option value="Resina">Resina (SLA)</option>
                             <option value="Outro">Outro</option>
                         </select>
                     </div>
 
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label}>Cor</label>
-                        <input 
-                            type="text" 
-                            name="color" 
-                            value={formData.color} 
-                            onChange={handleChange} 
-                            placeholder="Ex: Preto, Azul, Branco" 
+                    <div style={styles.fieldGroup}>
+                        <label style={styles.label}>Cor / Acabamento:</label>
+                        <input
+                            type="text"
+                            value={color}
+                            onChange={(e) => setColor(e.target.value)}
                             style={styles.input}
-                        />
-                    </div>
-                </div>
-
-                <div style={styles.rowGrid}>
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label}>Quantidade Inicial</label>
-                        <input 
-                            type="number" 
-                            name="quantity" 
-                            value={formData.quantity} 
-                            onChange={handleChange} 
-                            placeholder="Ex: 1000" 
-                            required 
-                            style={styles.input}
+                            placeholder="Ex: Preto, Branco, Transparente"
                         />
                     </div>
 
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label}>Unidade</label>
-                        <select 
-                            name="unit" 
-                            value={formData.unit} 
-                            onChange={handleChange} 
+                    <div style={styles.fieldGroup}>
+                        <label style={styles.label}>Quantidade Comprada (em Kg):</label>
+                        <input
+                            type="number"
+                            step="0.1"
+                            value={purchaseKg}
+                            onChange={(e) => {
+                                setPurchaseKg(e.target.value);
+                                setCurrentStockGrams(String(Number(e.target.value) * 1000));
+                            }}
+                            required
+                            style={styles.input}
+                            placeholder="Ex: 1 (para rolo de 1kg)"
+                        />
+                    </div>
+
+                    <div style={styles.fieldGroup}>
+                        <label style={styles.label}>Estoque Atual Fracionado (em Gramas/g):</label>
+                        <input
+                            type="number"
+                            value={currentStockGrams}
+                            onChange={(e) => setCurrentStockGrams(e.target.value)}
+                            required
+                            style={styles.input}
+                            placeholder="Ex: 850 (restante do rolo)"
+                        />
+                    </div>
+
+                    <div style={styles.fieldGroup}>
+                        <label style={styles.label}>Situação do Estoque:</label>
+                        <select
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
                             style={styles.input}
                         >
-                            <option value="g">Gramas (g)</option>
-                            <option value="kg">Quilogramas (kg)</option>
-                            <option value="un">Unidades (un)</option>
+                            <option value="Em Estoque">Em Estoque</option>
+                            <option value="Baixo Estoque">Baixo Estoque</option>
+                            <option value="Esgotado">Esgotado</option>
                         </select>
                     </div>
-                </div>
 
-                <div style={styles.inputGroup}>
-                    <label style={styles.label}>Estoque Mínimo (Alerta)</label>
-                    <input 
-                        type="number" 
-                        name="minStock" 
-                        value={formData.minStock} 
-                        onChange={handleChange} 
-                        placeholder="Ex: 200" 
-                        style={styles.input}
-                    />
-                </div>
+                    <button type="submit" disabled={submitting} style={styles.submitButton}>
+                        {submitting ? 'Salvando...' : 'Salvar Insumo'}
+                    </button>
+                </form>
+            </div>
+        );
+    }
 
-                <button 
-                    type="submit" 
-                    disabled={loading}
-                    style={styles.button}
-                >
-                    {loading ? 'Cadastrando...' : 'Salvar Suprimento'}
+    return (
+        <div style={styles.container}>
+            <div style={styles.headerRow}>
+                <div>
+                    <span style={styles.miniCategory}>ESTOQUE & INSUMOS</span>
+                    <h2 style={styles.title}>Suprimentos de Impressão</h2>
+                    <p style={styles.subtitle}>Gerencie rolos de filamento, resinas e controle de consumo fracionado.</p>
+                </div>
+                <button onClick={() => setView('form')} style={styles.newButton}>
+                    + Novo insumo
                 </button>
-            </form>
+            </div>
+
+            <div style={styles.tableCard}>
+                <div style={styles.filterBar}>
+                    <input
+                        type="text"
+                        placeholder="Pesquisar por nome, cor ou material..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={styles.searchInput}
+                    />
+                    <select 
+                        value={materialFilter} 
+                        onChange={(e) => setMaterialFilter(e.target.value)}
+                        style={styles.selectFilter}
+                    >
+                        <option value="all">Material: todos</option>
+                        <option value="PLA">PLA</option>
+                        <option value="ABS">ABS</option>
+                        <option value="PETG">PETG</option>
+                        <option value="Resina">Resina</option>
+                    </select>
+                    <select 
+                        value={statusFilter} 
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        style={styles.selectFilter}
+                    >
+                        <option value="all">Status: todos</option>
+                        <option value="Em Estoque">Em Estoque</option>
+                        <option value="Baixo Estoque">Baixo Estoque</option>
+                        <option value="Esgotado">Esgotado</option>
+                    </select>
+                </div>
+
+                {loading ? (
+                    <div style={{ padding: '30px', textAlign: 'center', color: '#7f8c8d' }}>Carregando insumos...</div>
+                ) : (
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={styles.table}>
+                            <thead>
+                                <tr style={styles.thRow}>
+                                    <th style={styles.th}>ID</th>
+                                    <th style={styles.th}>INSEMO / FILAMENTO</th>
+                                    <th style={styles.th}>MATERIAL</th>
+                                    <th style={styles.th}>COR</th>
+                                    <th style={styles.th}>COMPRA (KG)</th>
+                                    <th style={styles.th}>ESTOQUE ATUAL (G)</th>
+                                    <th style={styles.th}>STATUS</th>
+                                    <th style={styles.th}>AÇÕES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredSupplies.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="8" style={{ padding: '20px', textAlign: 'center', color: '#7f8c8d' }}>
+                                            Nenhum insumo encontrado.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredSupplies.map((item, index) => {
+                                        let badgeStyle = styles.badgeDisponivel;
+                                        if (item.status === 'Baixo Estoque' || item.current_stock_grams <= 200) badgeStyle = styles.badgeBaixo;
+                                        if (item.status === 'Esgotado' || item.current_stock_grams <= 0) badgeStyle = styles.badgeEsgotado;
+
+                                        return (
+                                            <tr key={item.id || index} style={styles.tr}>
+                                                <td style={styles.td}>#{String(index + 1).padStart(3, '0')}</td>
+                                                <td style={{...styles.td, fontWeight: '500'}}>{item.name}</td>
+                                                <td style={styles.td}>{item.material || 'PLA'}</td>
+                                                <td style={styles.td}>{item.color || 'Preto'}</td>
+                                                <td style={styles.td}>{item.purchase_kg ? `${item.purchase_kg} Kg` : '1 Kg'}</td>
+                                                <td style={{...styles.td, fontWeight: 'bold'}}>
+                                                    {item.current_stock_grams != null ? `${item.current_stock_grams}g` : '1000g'}
+                                                </td>
+                                                <td style={styles.td}>
+                                                    <span style={badgeStyle}>
+                                                        ● {item.current_stock_grams <= 0 ? 'Esgotado' : item.current_stock_grams <= 200 ? 'Baixo Estoque' : 'Em Estoque'}
+                                                    </span>
+                                                </td>
+                                                <td style={styles.td}>
+                                                    <button 
+                                                        onClick={() => alert(`Detalhes do insumo: ${item.name}`)}
+                                                        style={styles.actionBtn}
+                                                    >
+                                                        Ver detalhes
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
-
-const styles = {
-    container: {
-        padding: '20px',
-        maxWidth: '700px',
-        margin: '0 auto',
-    },
-    header: {
-        marginBottom: '24px',
-        borderBottom: '2px solid #edf2f7',
-        paddingBottom: '12px',
-    },
-    title: {
-        fontSize: '24px',
-        fontWeight: '700',
-        color: '#1a202c',
-        margin: '0 0 6px 0',
-    },
-    subtitle: {
-        fontSize: '14px',
-        color: '#718096',
-        margin: '0',
-    },
-    successAlert: {
-        backgroundColor: '#c6f6d5',
-        color: '#22543d',
-        padding: '12px 16px',
-        borderRadius: '8px',
-        fontSize: '14px',
-        marginBottom: '20px',
-        border: '1px solid #9ae6b4',
-    },
-    formCard: {
-        backgroundColor: '#fff',
-        border: '1px solid #e2e8f0',
-        borderRadius: '12px',
-        padding: '24px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-    },
-    rowGrid: {
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '16px',
-    },
-    inputGroup: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '6px',
-    },
-    label: {
-        fontSize: '13px',
-        fontWeight: '600',
-        color: '#4a5568',
-    },
-    input: {
-        padding: '10px 12px',
-        borderRadius: '8px',
-        border: '1px solid #cbd5e0',
-        fontSize: '14px',
-        color: '#2d3748',
-        outline: 'none',
-        fontFamily: 'inherit',
-    },
-    button: {
-        backgroundColor: '#2b6cb0',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '8px',
-        padding: '12px',
-        fontSize: '15px',
-        fontWeight: '600',
-        cursor: 'pointer',
-        marginTop: '10px',
-        transition: 'background-color 0.2s',
-    }
-};

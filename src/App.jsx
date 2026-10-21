@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { Login } from './pages/Login'; // Certifique-se de que o caminho do Login está correto
 import { Navbar } from './components/Navbar';
-import { UserRegister } from './components/UserRegister';
-import { ContactPage } from './pages/ContactPage';
-import { FilamentReport } from './pages/FilamentReportPage';
-import { MachineUsage } from './pages/MachineUsage';
-import { LoanHistory } from './pages/LoanHistory';
-import { MaintenanceHistory } from './pages/MaintenanceHistory';
+import { UserRegister } from './pages/UserRegister';
+import { FilamentReport } from './pages/reports/FilamentReportPage';
+import { MachineUsage } from './pages/reports/MachineUsage';
+import { LoanHistory } from './pages/reports/LoanHistory';
+import { MaintenanceHistory } from './pages/reports/MaintenanceHistory';
 import { SupplyRegister } from './pages/SupplyRegister';
 import { MachineRegister } from './pages/MachineRegister';
 import { LoanRegister } from './pages/LoanRegister';
+import { ClientRegister } from './pages/ClientRegister';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -18,13 +18,11 @@ function App() {
   const [currentRoute, setCurrentRoute] = useState('users');
 
   useEffect(() => {
-    // 1. Verifica se já existe uma sessão ativa ao carregar a página
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoadingAuth(false);
     });
 
-    // 2. Fica escutando alterações de login/logout em tempo real
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setLoadingAuth(false);
@@ -33,7 +31,6 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Mostra um estado de carregamento enquanto valida o login no Supabase
   if (loadingAuth) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif' }}>
@@ -42,12 +39,10 @@ function App() {
     );
   }
 
-  // 3. Se não houver sessão ativa, trava o site inteiro e exibe a tela de Login
   if (!session) {
     return <Login />;
   }
 
-  // Renderização das telas internas do sistema
   const renderContent = () => {
     if (currentRoute.startsWith('register:')) {
       const registerType = currentRoute.split(':')[1];

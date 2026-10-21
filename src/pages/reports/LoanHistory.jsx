@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
-import { reportStyles as styles} from '../styles/reportStyles';
+import { supabase } from '../../supabaseClient';
+import { styles } from '../../styles/reportStyles';
 
 export function LoanHistory() {
     const [loanData, setLoanData] = useState([]);

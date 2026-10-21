@@ -1,112 +1,113 @@
 import { useState } from 'react';
 
 export function Navbar({ onNavigate }) {
-    
-    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-    const [isReportOpen, setIsReportOpen] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState(null); // 'attendance' | 'patrimony' | 'reports' | null
 
-    const handleReportClick = (reportType) => {
-        onNavigate(`reports:${reportType}`);
-        setIsReportOpen(false); // fecha dropdown
+    const handleMenuClick = (route) => {
+        onNavigate(route);
+        setOpenDropdown(null); // Fecha o dropdown ao clicar
     };
-    
+
     return (
         <nav style={styles.nav}>
-            <h1 style={styles.logo}>Museu</h1>
+            <div style={styles.logoContainer} onClick={() => onNavigate('home')} role="button">
+                <h1 style={styles.logo}>Museu & Biblioteca</h1>
+            </div>
+
             <div style={styles.links}>
-                <button onClick={() => onNavigate('users')} style={styles.navButton}>
-                    Usuários
+                {/* Botão Início */}
+                <button style={styles.navButton} onClick={() => onNavigate('home')}>
+                    Início
                 </button>
 
+                {/* Dropdown: Atendimento (Usuários e Clientes) */}
                 <div
                     style={styles.dropdownContainer}
-                    onMouseEnter={() => setIsRegisterOpen(true)}
-                    onMouseLeave={() => setIsRegisterOpen(false)}
+                    onMouseEnter={() => setOpenDropdown('attendance')}
+                    onMouseLeave={() => setOpenDropdown(null)}
                 >
-                    <button 
-                        style={styles.navButton}
-                    >
-                        Cadastro
-                    </button>
-
-                    {isRegisterOpen && (
+                    <button style={styles.navButton}>Atendimento ▾</button>
+                    {openDropdown === 'attendance' && (
                         <div style={styles.dropdownMenu}>
                             <button
-                                onClick={() => onNavigate('register:supplies')}
-                                className="dropdown-item-hover"
+                                onClick={() => handleMenuClick('register:users')}
                                 style={styles.dropdownItem}
                             >
-                                Suprimentos
+                                Usuários (Equipe)
                             </button>
-
                             <button
-                                onClick={() => onNavigate('register:machines')}
-                                className="dropdown-item-hover"
+                                onClick={() => handleMenuClick('register:clients')}
                                 style={styles.dropdownItem}
                             >
-                                Máquinas (3D / Scanners)
-                            </button>
-
-                            <button
-                                onClick={() => onNavigate('register:machine-loan')}
-                                className="dropdown-item-hover"
-                                style={styles.dropdownItem}
-                            >
-                                Equipamentos para empréstimo
+                                Clientes (Alunos/Visitantes)
                             </button>
                         </div>
                     )}
                 </div>
-                
-                {/* container do dropdown de relatorios */}
+
+                {/* Dropdown: Patrimônio & Insumos (Máquinas, Equipamentos e Suprimentos) */}
+                <div
+                    style={styles.dropdownContainer}
+                    onMouseEnter={() => setOpenDropdown('patrimony')}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                >
+                    <button style={styles.navButton}>Patrimônio ▾</button>
+                    {openDropdown === 'patrimony' && (
+                        <div style={styles.dropdownMenu}>
+                            <button
+                                onClick={() => handleMenuClick('register:machines')}
+                                style={styles.dropdownItem}
+                            >
+                                Máquinas (3D / Scanners)
+                            </button>
+                            <button
+                                onClick={() => handleMenuClick('register:machine-loan')}
+                                style={styles.dropdownItem}
+                            >
+                                Equipamentos p/ Empréstimo
+                            </button>
+                            <button
+                                onClick={() => handleMenuClick('register:supplies')}
+                                style={styles.dropdownItem}
+                            >
+                                Suprimentos / Insumos
+                            </button>
+                        </div>
+                    )}
+                </div>
+
                 <div 
                     style={styles.dropdownContainer}
-                    onMouseEnter={() => setIsReportOpen(true)}
-                    onMouseLeave={() => setIsReportOpen(false)}
+                    onMouseEnter={() => setOpenDropdown('reports')}
+                    onMouseLeave={() => setOpenDropdown(null)}
                 >
-                    <button
-                        style={styles.navButton}
-                    >
-                        Relatórios
-                    </button>
-
-                    {/* caixinha do dropdown, {isReportOpen && (...)} é basicamente um if (isReportOpen == true...) */}
-
-                    {isReportOpen && (
-
+                    <button style={styles.navButton}>Relatórios ▾</button>
+                    {openDropdown === 'reports' && (
                         <div style={styles.dropdownMenu}>
                             <button 
-                                onClick={() => handleReportClick('filament-consumption')}
-                                className="dropdown-item-hover"
+                                onClick={() => handleMenuClick('reports:filament-consumption')}
                                 style={styles.dropdownItem}
                             >
-                                Consumo de filamentos
+                                Consumo de Filamentos
                             </button>
-
                             <button
-                                onClick={() => handleReportClick('machine-usage')}
-                                className="dropdown-item-hover"
+                                onClick={() => handleMenuClick('reports:machine-usage')}
                                 style={styles.dropdownItem}
                             >
-                                Uso das máquinas
+                                Uso das Máquinas
                             </button>
-
                             <button
-                                onClick={() => handleReportClick('loan-history')}
-                                className="dropdown-item-hover"
+                                onClick={() => handleMenuClick('reports:loan-history')}
                                 style={styles.dropdownItem}
                             >
-                                Histórico de empréstimos
+                                Histórico de Empréstimos
                             </button>
-
                             <button
-                                onClick={() => handleReportClick('maintenance-history')}
-                                className="dropdown-item-hover"
+                                onClick={() => handleMenuClick('reports:maintenance-history')}
                                 style={styles.dropdownItem}
                             >
                                 Manutenções
                             </button>
-
                         </div>
                     )}
                 </div>
@@ -114,39 +115,46 @@ export function Navbar({ onNavigate }) {
                 <button onClick={() => onNavigate('contact')} style={styles.navButton}>
                     Contato
                 </button>
-
             </div>
         </nav>
     );
 }
 
-// estilos rapidos em linha para o exemplo
 const styles = {
-
     nav: {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#690013', // #9d7628 e #690013 
+        backgroundColor: '#690013', 
         color: '#fff',
         padding: '15px 30px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        fontFamily: 'sans-serif',
     },
-    logo: { // nome museu
+    logoContainer: {
+        cursor: 'pointer',
+    },
+    logo: {
         margin: 0,
-        fontSize: '1.2rem',
+        fontSize: '1.25rem',
+        fontWeight: 'bold',
+        letterSpacing: '0.5px',
     },
     links: {
         display: 'flex',
-        gap: '10px',
+        gap: '15px',
         alignItems: 'center',
     },
-    navButton: { // usuarios, contato, maquinas (do lado direito da logo museu)
+    navButton: {
         background: 'none',
         border: 'none',
         color: '#fff',
-        fontSize: '16px',
+        fontSize: '15px',
+        fontWeight: '500',
         cursor: 'pointer',
-        padding: '5px 10px',
+        padding: '8px 12px',
+        borderRadius: '4px',
+        transition: 'background-color 0.2s',
     },
     dropdownContainer: {
         position: 'relative',
@@ -157,14 +165,14 @@ const styles = {
         top: '100%',
         right: 0,
         backgroundColor: '#690013',
-        border: '1px solid rgba(255, 255, 255, 0.15',
-        borderRadius: '4px',
-        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        borderRadius: '6px',
+        boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.35)',
         display: 'flex',
         flexDirection: 'column',
-        minWidth: '200px',
+        minWidth: '230px',
         zIndex: 100,
-        padding: '5px 0',
+        padding: '6px 0',
     },
     dropdownItem: {
         background: 'none',
@@ -175,5 +183,6 @@ const styles = {
         padding: '10px 16px',
         cursor: 'pointer',
         width: '100%',
+        fontWeight: 'normal',
     },
 };
