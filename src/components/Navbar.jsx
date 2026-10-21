@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
 export function Navbar({ onNavigate }) {
-    const [openDropdown, setOpenDropdown] = useState(null); // 'attendance' | 'patrimony' | 'reports' | null
+    const [openDropdown, setOpenDropdown] = useState(null);
 
     const handleMenuClick = (route) => {
         onNavigate(route);
-        setOpenDropdown(null); // Fecha o dropdown ao clicar
+        setOpenDropdown(null);
     };
 
     return (
@@ -15,7 +15,6 @@ export function Navbar({ onNavigate }) {
             </div>
 
             <div style={styles.links}>
-                {/* Botão Início */}
                 <button style={styles.navButton} onClick={() => onNavigate('home')}>
                     Início
                 </button>
@@ -30,13 +29,13 @@ export function Navbar({ onNavigate }) {
                     {openDropdown === 'attendance' && (
                         <div style={styles.dropdownMenu}>
                             <button
-                                onClick={() => handleMenuClick('register:users')}
+                                onClick={() => handleMenuClick('users')}
                                 style={styles.dropdownItem}
                             >
                                 Usuários (Equipe)
                             </button>
                             <button
-                                onClick={() => handleMenuClick('register:clients')}
+                                onClick={() => handleMenuClick('clients')}
                                 style={styles.dropdownItem}
                             >
                                 Clientes (Alunos/Visitantes)

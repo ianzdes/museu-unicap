@@ -87,8 +87,8 @@ function App() {
       case 'users':
         return <UserRegister />;
 
-      case 'contacts':
-        return <ContactPage />;
+      case 'clients':
+        return <ClientRegister />;
 
       default:
         return <div>Página não encontrada</div>;
