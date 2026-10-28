@@ -3,47 +3,108 @@ import { supabase } from '../../supabaseClient';
 import { styles } from '../../styles/reportStyles';
 
 export function MachineUsage() {
-
-    const [usageData, setUsageData] = useState([]);
+    const [machineData, setMachineData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(false);
+        fetchMachineUsage();
     }, []);
+
+    async function fetchMachineUsage() {
+        try {
+            setLoading(true);
+            // Buscando da tabela de equipamentos/máquinas
+            const { data, error } = await supabase
+                .from('equipments')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setMachineData(data || []);
+        } catch (error) {
+            console.error('Erro ao buscar uso de máquinas:', error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Métricas calculadas dinamicamente
+    const totalMachines = machineData.length;
+    const availableMachines = machineData.filter(m => m.status?.toLowerCase() === 'disponível' || m.status === 'Ativo').length;
 
     return (
         <div style={styles.container}>
-            <div style={styles.header}>
-                <h2 style={styles.title}>Relatório do uso de máquinas</h2>
-                <p style={styles.subtitle}>Acompanhe o tempo de operação, carga de trabalho e histórico de equipamentos</p>
+            {/* Cabeçalho */}
+            <div style={styles.headerRow}>
+                <div>
+                    <span style={styles.miniCategory}>RELATÓRIOS</span>
+                    <h2 style={styles.title}>Uso das Máquinas</h2>
+                    <p style={styles.subtitle}>Monitore o status operacional, disponibilidade e condição das máquinas e equipamentos.</p>
+                </div>
             </div>
 
+            {/* Cards de Métricas */}
             <div style={styles.metricGrid}>
                 <div style={styles.metricCard}>
-                    <span style={styles.metricLabel}>Tempo Total de Operação</span>
-                    <span style={styles.metricValue}>0h 00m</span>
+                    <span style={styles.metricLabel}>Total Cadastrado</span>
+                    <span style={styles.metricValue}>{totalMachines}</span>
                 </div>
 
                 <div style={styles.metricCard}>
-                    <span style={styles.metricLabel}>Total de utilizações</span>
-                    <span style={styles.metricValue}>0</span>
+                    <span style={styles.metricLabel}>Disponíveis / Operacionais</span>
+                    <span style={styles.metricValue}>{availableMachines}</span>
                 </div>
             </div>
 
+            {/* Renderização Condicional de Estados */}
             {loading ? (
                 <div style={styles.loadingContainer}>
-                    <p style={styles.loadingText}>Carregando dados de uso...</p>
+                    <p style={styles.loadingText}>Carregando dados de uso das máquinas...</p>
                 </div>
-                
-            ) : usageData.length === 0 ? (
+            ) : machineData.length === 0 ? (
                 <div style={styles.emptyCard}>
-                    <span style={styles.emptyIcon}>🖨️</span>
-                    <p style={styles.emptyTitle}>Nenhum uso de máquina registrado no momento.</p>
-                    <p style={styles.emptySubtitle}>Assim que as primeiras operações forem concluídas, elas aparecerão aqui.</p>
+                    <p style={styles.emptyTitle}>Nenhuma máquina registrada no momento.</p>
+                    <p style={styles.emptySubtitle}>Assim que os primeiros equipamentos forem cadastrados, eles aparecerão aqui.</p>
                 </div>
             ) : (
-                <div style={styles.tableContainer}>
-                    {/* tabela de registros vai vir aqui futuramente */}
+                /* Tabela */
+                <div style={styles.tableCard}>
+                    <div style={styles.tableContainer}>
+                        <table style={styles.table}>
+                            <thead>
+                                <tr style={styles.thRow}>
+                                    <th style={styles.th}>CÓDIGO / PATRIMÔNIO</th>
+                                    <th style={styles.th}>NOME</th>
+                                    <th style={styles.th}>CATEGORIA</th>
+                                    <th style={styles.th}>CONDIÇÃO</th>
+                                    <th style={styles.th}>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {machineData.map((item) => (
+                                    <tr key={item.id} style={styles.tr}>
+                                        <td style={{ ...styles.td, fontWeight: 'bold' }}>
+                                            {item.asset_code || 'N/D'}
+                                        </td>
+                                        <td style={styles.td}>
+                                            {item.name || 'Equipamento sem nome'}
+                                        </td>
+                                        <td style={styles.td}>{item.category || 'Geral'}</td>
+                                        <td style={styles.td}>
+                                            <span style={styles.badgeInfo}>
+                                                {item.condition || 'Boa'}
+                                            </span>
+                                        </td>
+                                        <td style={styles.td}>
+                                            <span style={item.status === 'Disponível' ? styles.badgeActive : styles.badgeWarning}>
+                                                {item.status || 'Indefinido'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
         </div>

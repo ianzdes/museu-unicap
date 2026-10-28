@@ -11,6 +11,8 @@ import { SupplyRegister } from './pages/SupplyRegister';
 import { MachineRegister } from './pages/MachineRegister';
 import { LoanRegister } from './pages/LoanRegister';
 import { ClientRegister } from './pages/ClientRegister';
+import { UserSettings } from './pages/UserSettings';
+import { HomePage } from './pages/HomePage';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -89,6 +91,12 @@ function App() {
 
       case 'clients':
         return <ClientRegister />;
+
+      case 'user-settings':
+        return <UserSettings />;
+
+      case 'homepage':
+        return <HomePage />;
 
       default:
         return <div>Página não encontrada</div>;

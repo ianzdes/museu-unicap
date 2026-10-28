@@ -1,11 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
+import { UserSettings } from '../pages/UserSettings';
 
 export function Navbar({ onNavigate }) {
     const [openDropdown, setOpenDropdown] = useState(null);
+    const [userName, setUserName] = useState('Usuário');
+
+    // Busca o nome/e-mail do usuário logado no Supabase ao carregar
+    useEffect(() => {
+        async function fetchUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const name = user.user_metadata?.name || user.email.split('@')[0];
+                setUserName(name);
+            }
+        }
+        fetchUser();
+    }, []);
 
     const handleMenuClick = (route) => {
         onNavigate(route);
         setOpenDropdown(null);
+    };
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        window.location.href = '/login';
     };
 
     return (
@@ -25,7 +45,7 @@ export function Navbar({ onNavigate }) {
                     onMouseEnter={() => setOpenDropdown('attendance')}
                     onMouseLeave={() => setOpenDropdown(null)}
                 >
-                    <button style={styles.navButton}>Atendimento ▾</button>
+                    <button style={styles.navButton}>Gestão ▾</button>
                     {openDropdown === 'attendance' && (
                         <div style={styles.dropdownMenu}>
                             <button
@@ -44,7 +64,7 @@ export function Navbar({ onNavigate }) {
                     )}
                 </div>
 
-                {/* Dropdown: Patrimônio & Insumos (Máquinas, Equipamentos e Suprimentos) */}
+                {/* Dropdown: Patrimônio & Insumos */}
                 <div
                     style={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('patrimony')}
@@ -75,6 +95,7 @@ export function Navbar({ onNavigate }) {
                     )}
                 </div>
 
+                {/* Dropdown: Relatórios */}
                 <div 
                     style={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('reports')}
@@ -111,9 +132,32 @@ export function Navbar({ onNavigate }) {
                     )}
                 </div>
 
-                <button onClick={() => onNavigate('contact')} style={styles.navButton}>
-                    Contato
-                </button>
+                {/* Dropdown: Usuário / Perfil (Preferências e Logout) */}
+                <div 
+                    style={styles.dropdownContainer}
+                    onMouseEnter={() => setOpenDropdown('userMenu')}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                >
+                    <button style={styles.userNavButton}>
+                        {userName} ▾
+                    </button>
+                    {openDropdown === 'userMenu' && (
+                        <div style={styles.dropdownMenu}>
+                            <button
+                                onClick={() => handleMenuClick('user-settings')}
+                                style={styles.dropdownItem}
+                            >
+                                Preferências
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                style={{ ...styles.dropdownItem, color: '#ffb3b3' }}
+                            >
+                                Sair (Logout)
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </nav>
     );
@@ -155,6 +199,17 @@ const styles = {
         borderRadius: '4px',
         transition: 'background-color 0.2s',
     },
+    userNavButton: {
+        background: 'rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        color: '#fff',
+        fontSize: '15px',
+        fontWeight: '600',
+        cursor: 'pointer',
+        padding: '8px 14px',
+        borderRadius: '6px',
+        transition: 'background-color 0.2s',
+    },
     dropdownContainer: {
         position: 'relative',
         display: 'inline-block',
@@ -169,7 +224,7 @@ const styles = {
         boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.35)',
         display: 'flex',
         flexDirection: 'column',
-        minWidth: '230px',
+        minWidth: '200px',
         zIndex: 100,
         padding: '6px 0',
     },

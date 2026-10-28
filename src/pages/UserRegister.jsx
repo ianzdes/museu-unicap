@@ -127,7 +127,7 @@ export function UserRegister() {
                             onChange={(e) => setRole(e.target.value)}
                             style={styles.input}
                         >
-                            <option value="client">Cliente / Leitor</option>
+                            <option value="client">Cliente</option>
                             <option value="technician">Técnico</option>
                             <option value="admin">Administrador</option>
                         </select>

@@ -134,10 +134,8 @@ export function MachineRegister() {
                             onChange={(e) => setCategory(e.target.value)}
                             style={styles.input}
                         >
-                            <option value="Eletrônico">Eletrônico</option>
-                            <option value="Digitalização">Digitalização</option>
-                            <option value="Audiovisual">Audiovisual</option>
-                            <option value="Impressão 3D">Impressão 3D</option>
+                            <option value="Digitalização">Scanner</option>
+                            <option value="Impressão 3D">Impressora 3D</option>
                         </select>
                     </div>
 
