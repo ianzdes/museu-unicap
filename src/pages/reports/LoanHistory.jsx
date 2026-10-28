@@ -27,13 +27,11 @@ export function LoanHistory() {
         }
     }
 
-    // Métricas calculadas dinamicamente
     const totalLoans = loanData.length;
     const activeLoans = loanData.filter(l => l.status?.toLowerCase() === 'ativo' || l.status === 'Em Andamento').length;
 
     return (
         <div style={styles.container}>
-            {/* Cabeçalho */}
             <div style={styles.headerRow}>
                 <div>
                     <span style={styles.miniCategory}>RELATÓRIOS</span>
@@ -42,7 +40,6 @@ export function LoanHistory() {
                 </div>
             </div>
 
-            {/* Cards de Métricas */}
             <div style={styles.metricGrid}>
                 <div style={styles.metricCard}>
                     <span style={styles.metricLabel}>Empréstimos Ativos</span>
@@ -55,7 +52,6 @@ export function LoanHistory() {
                 </div>
             </div>
 
-            {/* Renderização Condicional de Estados */}
             {loading ? (
                 <div style={styles.loadingContainer}>
                     <p style={styles.loadingText}>Carregando histórico de empréstimos...</p>
@@ -66,7 +62,6 @@ export function LoanHistory() {
                     <p style={styles.emptySubtitle}>Assim que os primeiros empréstimos forem cadastrados, eles aparecerão aqui.</p>
                 </div>
             ) : (
-                /* Tabela Padronizada */
                 <div style={styles.tableCard}>
                     <div style={styles.tableContainer}>
                         <table style={styles.table}>

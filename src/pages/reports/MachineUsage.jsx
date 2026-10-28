@@ -13,7 +13,6 @@ export function MachineUsage() {
     async function fetchMachineUsage() {
         try {
             setLoading(true);
-            // Buscando da tabela de equipamentos/máquinas
             const { data, error } = await supabase
                 .from('equipments')
                 .select('*')
@@ -28,13 +27,11 @@ export function MachineUsage() {
         }
     }
 
-    // Métricas calculadas dinamicamente
     const totalMachines = machineData.length;
     const availableMachines = machineData.filter(m => m.status?.toLowerCase() === 'disponível' || m.status === 'Ativo').length;
 
     return (
         <div style={styles.container}>
-            {/* Cabeçalho */}
             <div style={styles.headerRow}>
                 <div>
                     <span style={styles.miniCategory}>RELATÓRIOS</span>
@@ -43,7 +40,6 @@ export function MachineUsage() {
                 </div>
             </div>
 
-            {/* Cards de Métricas */}
             <div style={styles.metricGrid}>
                 <div style={styles.metricCard}>
                     <span style={styles.metricLabel}>Total Cadastrado</span>
@@ -56,7 +52,6 @@ export function MachineUsage() {
                 </div>
             </div>
 
-            {/* Renderização Condicional de Estados */}
             {loading ? (
                 <div style={styles.loadingContainer}>
                     <p style={styles.loadingText}>Carregando dados de uso das máquinas...</p>
@@ -67,7 +62,6 @@ export function MachineUsage() {
                     <p style={styles.emptySubtitle}>Assim que os primeiros equipamentos forem cadastrados, eles aparecerão aqui.</p>
                 </div>
             ) : (
-                /* Tabela */
                 <div style={styles.tableCard}>
                     <div style={styles.tableContainer}>
                         <table style={styles.table}>

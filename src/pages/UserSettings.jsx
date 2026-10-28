@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { styles } from '../styles/reportStyles'; // Reutilizando os estilos padronizados
+import { styles } from '../styles/reportStyles';
 
 export function UserSettings() {
     const [userEmail, setUserEmail] = useState('');
@@ -28,7 +28,6 @@ export function UserSettings() {
         setError('');
 
         try {
-            // Atualiza o nome nos metadados do usuário no Supabase Auth
             const { error: updateError } = await supabase.auth.updateUser({
                 data: { name: displayName }
             });
@@ -73,7 +72,6 @@ export function UserSettings() {
 
     return (
         <div style={styles.container}>
-            {/* Cabeçalho */}
             <div style={styles.headerRow}>
                 <div>
                     <span style={styles.miniCategory}>SISTEMA</span>
@@ -82,7 +80,6 @@ export function UserSettings() {
                 </div>
             </div>
 
-            {/* Mensagens de Feedback */}
             {message && (
                 <div style={{ ...styles.badgeActive, marginBottom: '20px', padding: '12px', width: '100%', display: 'block' }}>
                     {message}
@@ -96,7 +93,6 @@ export function UserSettings() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '20px' }}>
                 
-                {/* Card 1: Informações do Perfil */}
                 <div style={styles.card} className="preferences-card">
                     <div style={styles.formHeader}>
                         <h3 style={styles.emptyTitle}>Meus Dados</h3>
@@ -129,8 +125,6 @@ export function UserSettings() {
                         </button>
                     </form>
                 </div>
-
-                {/* Card 2: Alteração de Senha */}
                 <div style={styles.card}>
                     <div style={styles.formHeader}>
                         <h3 style={styles.emptyTitle}>Segurança</h3>

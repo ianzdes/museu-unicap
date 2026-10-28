@@ -6,7 +6,6 @@ export function Footer({ onNavigate }) {
     return (
         <footer style={styles.footer}>
             <div style={styles.container}>
-                {/* Seção 1: Identificação do Sistema */}
                 <div style={styles.section}>
                     <h3 style={styles.title}>Museu & Biblioteca</h3>
                     <p style={styles.description}>
@@ -15,7 +14,6 @@ export function Footer({ onNavigate }) {
                     </p>
                 </div>
 
-                {/* Seção 2: Links Rápidos */}
                 <div style={styles.section}>
                     <h4 style={styles.subTitle}>Navegação</h4>
                     <div style={styles.linkList}>
@@ -26,16 +24,14 @@ export function Footer({ onNavigate }) {
                     </div>
                 </div>
 
-                {/* Seção 3: Informações do Laboratório / Museu */}
                 <div style={styles.section}>
                     <h4 style={styles.subTitle}>Atendimento & Suporte</h4>
-                    <p style={styles.infoText}>📍 Bloco Central - Sala de Tecnologia</p>
-                    <p style={styles.infoText}>✉️ suporte.museu@instituicao.edu.br</p>
-                    <p style={styles.infoText}>⏰ Seg. a Sex. - 08:00 às 18:00</p>
+                    <p style={styles.infoText}>localizacao</p>
+                    <p style={styles.infoText}>email suporte</p>
+                    <p style={styles.infoText}>dia e horario de funcionamento</p>
                 </div>
             </div>
 
-            {/* Linha de Copyright */}
             <div style={styles.bottomBar}>
                 <p style={styles.copyright}>
                     &copy; {currentYear} Museu & Biblioteca. Todos os direitos reservados.
@@ -47,10 +43,10 @@ export function Footer({ onNavigate }) {
 
 const styles = {
     footer: {
-        backgroundColor: '#4a000d', // Um tom de vinho ligeiramente mais escuro que a Navbar (#690013) para dar contraste
+        backgroundColor: '#4a000d',
         color: '#ffffff',
         fontFamily: 'sans-serif',
-        marginTop: 'auto', // Garante que fique no final se a página for pequena
+        marginTop: 'auto',
         borderTop: '2px solid #8b0000',
     },
     container: {
@@ -77,7 +73,7 @@ const styles = {
         margin: '0 0 6px 0',
         fontSize: '15px',
         fontWeight: 'bold',
-        color: '#ffb3b3', // Tom suave para os subtítulos
+        color: '#ffb3b3',
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
     },
