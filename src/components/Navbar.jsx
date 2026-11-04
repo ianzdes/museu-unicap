@@ -35,7 +35,7 @@ export function Navbar({ onNavigate }) {
             </div>
 
             <div style={styles.links}>
-                <button style={styles.navButton} onClick={() => onNavigate('home')}>
+                <button style={styles.navButton} onClick={() => handleMenuClick('homepage')}>
                     Início
                 </button>
 

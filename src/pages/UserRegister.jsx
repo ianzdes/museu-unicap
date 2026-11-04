@@ -16,6 +16,14 @@ export function UserRegister() {
     const [role, setRole] = useState('client');
     const [submitting, setSubmitting] = useState(false);
 
+    // estados para controlar o modal de detalhes/edição
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editName, setEditName] = useState('');
+    const [editRole, setEditRole] = useState('client');
+    const [editStatus, setEditStatus] = useState('Ativo');
+    const [actionLoading, setActionLoading] = useState(false);
+
     useEffect(() => {
         fetchUsers();
     }, []);
@@ -73,6 +81,66 @@ export function UserRegister() {
             setEmail('');
             setRole('client');
             setView('list');
+            fetchUsers();
+        }
+    };
+
+    // funções do modal
+    const handleOpenModal = (user) => {
+        setSelectedUser(user);
+        setEditName(user.name || '');
+        setEditRole(user.role || 'client');
+        setEditStatus(user.status || 'Ativo');
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedUser(null);
+    };
+
+    const handleSaveEdit = async (e) => {
+        e.preventDefault();
+        if (!selectedUser) return;
+
+        setActionLoading(true);
+        const { error } = await supabase
+            .from('profiles')
+            .update({
+                name: editName,
+                role: editRole,
+                status: editStatus
+            })
+            .eq('id', selectedUser.id);
+
+        setActionLoading(false);
+
+        if (error) {
+            alert(`Erro ao atualizar usuário: ${error.message}`);
+        } else {
+            alert('Usuário atualizado com sucesso!');
+            handleCloseModal();
+            fetchUsers();
+        }
+    };
+
+    const handleDeleteUser = async () => {
+        if (!selectedUser) return;
+        if (!window.confirm(`Tem certeza que deseja excluir o usuário ${selectedUser.name}?`)) return;
+
+        setActionLoading(true);
+        const { error } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', selectedUser.id);
+
+        setActionLoading(false);
+
+        if (error) {
+            alert(`Erro ao excluir usuário: ${error.message}`);
+        } else {
+            alert('Usuário excluído com sucesso!');
+            handleCloseModal();
             fetchUsers();
         }
     };
@@ -224,10 +292,10 @@ export function UserRegister() {
                                             </td>
                                             <td style={styles.td}>
                                                 <button 
-                                                    onClick={() => alert(`Detalhes do usuário: ${user.name}`)}
+                                                    onClick={() => handleOpenModal(user)}
                                                     style={styles.actionBtn}
                                                 >
-                                                    Ver detalhes
+                                                    Gerenciar
                                                 </button>
                                             </td>
                                         </tr>
@@ -238,6 +306,134 @@ export function UserRegister() {
                     </div>
                 )}
             </div>
+
+            {/* caixa de diálogo / modal de detalhes e edição */}
+            {isModalOpen && (
+                <div style={modalStyles.overlay}>
+                    <div style={modalStyles.card}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+                            <h3 style={{ margin: 0, color: '#1a1a1a', fontSize: '18px' }}>Gerenciar Usuário</h3>
+                            <button onClick={handleCloseModal} style={modalStyles.closeBtn}>✕</button>
+                        </div>
+
+                        <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Nome Completo:</label>
+                                <input
+                                    type="text"
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    required
+                                    style={styles.input}
+                                />
+                            </div>
+
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Perfil / Cargo:</label>
+                                <select
+                                    value={editRole}
+                                    onChange={(e) => setEditRole(e.target.value)}
+                                    style={styles.input}
+                                >
+                                    <option value="client">Cliente</option>
+                                    <option value="technician">Técnico</option>
+                                    <option value="admin">Administrador</option>
+                                </select>
+                            </div>
+
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Status:</label>
+                                <select
+                                    value={editStatus}
+                                    onChange={(e) => setEditStatus(e.target.value)}
+                                    style={styles.input}
+                                >
+                                    <option value="Ativo">Ativo</option>
+                                    <option value="Inativo">Inativo</option>
+                                </select>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '12px' }}>
+                                <button 
+                                    type="button" 
+                                    onClick={handleDeleteUser} 
+                                    disabled={actionLoading}
+                                    style={modalStyles.deleteBtn}
+                                >
+                                    Deletar
+                                </button>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button 
+                                        type="button" 
+                                        onClick={handleCloseModal} 
+                                        style={modalStyles.cancelBtn}
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        disabled={actionLoading}
+                                        style={styles.submitButton}
+                                    >
+                                        {actionLoading ? 'Salvando...' : 'Salvar Alterações'}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
+const modalStyles = {
+    overlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 2000,
+        padding: '20px',
+    },
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: '12px',
+        width: '100%',
+        maxWidth: '450px',
+        padding: '24px',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+        fontFamily: 'sans-serif',
+    },
+    closeBtn: {
+        background: 'none',
+        border: 'none',
+        fontSize: '16px',
+        cursor: 'pointer',
+        color: '#64748b',
+    },
+    deleteBtn: {
+        backgroundColor: '#fee2e2',
+        color: '#991b1b',
+        border: '1px solid #fca5a5',
+        padding: '8px 12px',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '13px',
+        fontWeight: '500',
+    },
+    cancelBtn: {
+        backgroundColor: '#f1f5f9',
+        color: '#334155',
+        border: '1px solid #cbd5e1',
+        padding: '8px 14px',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '13px',
+    }
+};

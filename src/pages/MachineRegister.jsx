@@ -21,6 +21,15 @@ export function MachineRegister() {
     const [supplyLevel, setSupplyLevel] = useState('100%');
     const [submitting, setSubmitting] = useState(false);
 
+    // estados para controlar o modal de detalhes
+    const [selectedEquipment, setSelectedEquipment] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editName, setEditName] = useState('');
+    const [editCategory, setEditCategory] = useState('');
+    const [editCondition, setEditCondition] = useState('');
+    const [editStatus, setEditStatus] = useState('');
+    const [actionLoading, setActionLoading] = useState(false);
+
     useEffect(() => {
         fetchEquipments();
     }, []);
@@ -82,6 +91,68 @@ export function MachineRegister() {
         }
     };
 
+    // funções do modal
+    const handleOpenModal = (item) => {
+        setSelectedEquipment(item);
+        setEditName(item.name || '');
+        setEditCategory(item.category || 'Eletrônico');
+        setEditCondition(item.condition || 'Boa');
+        setEditStatus(item.status || 'Disponível');
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedEquipment(null);
+    };
+
+    const handleSaveEdit = async (e) => {
+        e.preventDefault();
+        if (!selectedEquipment) return;
+
+        setActionLoading(true);
+        const { error } = await supabase
+            .from('equipments')
+            .update({
+                name: editName,
+                category: editCategory,
+                condition: editCondition,
+                status: editStatus
+            })
+            .eq('id', selectedEquipment.id);
+
+        setActionLoading(false);
+
+        if (error) {
+            alert(`Erro ao atualizar equipamento: ${error.message}`);
+        } else {
+            alert('Equipamento atualizado com sucesso!');
+            handleCloseModal();
+            fetchEquipments();
+        }
+    };
+
+    const handleDeleteEquipment = async () => {
+        if (!selectedEquipment) return;
+        if (!window.confirm(`Tem certeza que deseja excluir o equipamento ${selectedEquipment.name}?`)) return;
+
+        setActionLoading(true);
+        const { error } = await supabase
+            .from('equipments')
+            .delete()
+            .eq('id', selectedEquipment.id);
+
+        setActionLoading(false);
+
+        if (error) {
+            alert(`Erro ao excluir equipamento: ${error.message}`);
+        } else {
+            alert('Equipamento excluído com sucesso!');
+            handleCloseModal();
+            fetchEquipments();
+        }
+    };
+
     const filteredEquipments = equipments.filter((eq) => {
         const matchesSearch = eq.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                               eq.asset_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -134,7 +205,9 @@ export function MachineRegister() {
                             onChange={(e) => setCategory(e.target.value)}
                             style={styles.input}
                         >
+                            <option value="Eletrônico">Eletrônico</option>
                             <option value="Digitalização">Scanner</option>
+                            <option value="Audiovisual">Audiovisual</option>
                             <option value="Impressão 3D">Impressora 3D</option>
                         </select>
                     </div>
@@ -297,10 +370,10 @@ export function MachineRegister() {
                                                 <td style={styles.td}>{item.supply_level || '100%'}</td>
                                                 <td style={styles.td}>
                                                     <button 
-                                                        onClick={() => alert(`Detalhes do equipamento: ${item.name}`)}
+                                                        onClick={() => handleOpenModal(item)}
                                                         style={styles.actionBtn}
                                                     >
-                                                        Ver detalhes
+                                                        Gerenciar
                                                     </button>
                                                 </td>
                                             </tr>
@@ -312,6 +385,150 @@ export function MachineRegister() {
                     </div>
                 )}
             </div>
+
+            {/* caixa de diálogo / modal */}
+            {isModalOpen && (
+                <div style={modalStyles.overlay}>
+                    <div style={modalStyles.card}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+                            <h3 style={{ margin: 0, color: '#1a1a1a', fontSize: '18px' }}>Gerenciar Equipamento</h3>
+                            <button onClick={handleCloseModal} style={modalStyles.closeBtn}>✕</button>
+                        </div>
+
+                        <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Nome do Equipamento:</label>
+                                <input
+                                    type="text"
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    required
+                                    style={styles.input}
+                                />
+                            </div>
+
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Categoria:</label>
+                                <select
+                                    value={editCategory}
+                                    onChange={(e) => setEditCategory(e.target.value)}
+                                    style={styles.input}
+                                >
+                                    <option value="Eletrônico">Eletrônico</option>
+                                    <option value="Digitalização">Scanner</option>
+                                    <option value="Audiovisual">Audiovisual</option>
+                                    <option value="Impressão 3D">Impressora 3D</option>
+                                </select>
+                            </div>
+
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Condição:</label>
+                                <select
+                                    value={editCondition}
+                                    onChange={(e) => setEditCondition(e.target.value)}
+                                    style={styles.input}
+                                >
+                                    <option value="Excelente">Excelente</option>
+                                    <option value="Boa">Boa</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="Ruim">Ruim</option>
+                                </select>
+                            </div>
+
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Situação:</label>
+                                <select
+                                    value={editStatus}
+                                    onChange={(e) => setEditStatus(e.target.value)}
+                                    style={styles.input}
+                                >
+                                    <option value="Disponível">Disponível</option>
+                                    <option value="Emprestado">Emprestado</option>
+                                    <option value="Manutenção">Manutenção</option>
+                                </select>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '12px' }}>
+                                <button 
+                                    type="button" 
+                                    onClick={handleDeleteEquipment} 
+                                    disabled={actionLoading}
+                                    style={modalStyles.deleteBtn}
+                                >
+                                    Deletar
+                                </button>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button 
+                                        type="button" 
+                                        onClick={handleCloseModal} 
+                                        style={modalStyles.cancelBtn}
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        disabled={actionLoading}
+                                        style={styles.submitButton}
+                                    >
+                                        {actionLoading ? 'Salvando...' : 'Salvar Alterações'}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
+const modalStyles = {
+    overlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 2000,
+        padding: '20px',
+    },
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: '12px',
+        width: '100%',
+        maxWidth: '450px',
+        padding: '24px',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+        fontFamily: 'sans-serif',
+    },
+    closeBtn: {
+        background: 'none',
+        border: 'none',
+        fontSize: '16px',
+        cursor: 'pointer',
+        color: '#64748b',
+    },
+    deleteBtn: {
+        backgroundColor: '#fee2e2',
+        color: '#991b1b',
+        border: '1px solid #fca5a5',
+        padding: '8px 12px',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '13px',
+        fontWeight: '500',
+    },
+    cancelBtn: {
+        backgroundColor: '#f1f5f9',
+        color: '#334155',
+        border: '1px solid #cbd5e1',
+        padding: '8px 14px',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '13px',
+    }
+};

@@ -15,6 +15,14 @@ export function ClientRegister() {
     const [clientType, setClientType] = useState('Aluno');
     const [submitting, setSubmitting] = useState(false);
 
+    // estados para controlar o modal de detalhes
+    const [selectedClient, setSelectedClient] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editName, setEditName] = useState('');
+    const [editContact, setEditContact] = useState('');
+    const [editClientType, setEditClientType] = useState('Aluno');
+    const [actionLoading, setActionLoading] = useState(false);
+
     useEffect(() => {
         fetchClients();
     }, []);
@@ -74,6 +82,66 @@ export function ClientRegister() {
         }
     };
 
+    // funções do modal
+    const handleOpenModal = (client) => {
+        setSelectedClient(client);
+        setEditName(client.name || '');
+        setEditContact(client.contact || '');
+        setEditClientType(client.type || 'Aluno');
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedClient(null);
+    };
+
+    const handleSaveEdit = async (e) => {
+        e.preventDefault();
+        if (!selectedClient) return;
+
+        setActionLoading(true);
+        const { error } = await supabase
+            .from('clients')
+            .update({
+                name: editName,
+                contact: editContact,
+                type: editClientType
+            })
+            .eq('id', selectedClient.id);
+
+        setActionLoading(false);
+
+        if (error) {
+            alert(`Erro ao atualizar cliente: ${error.message}`);
+        } else {
+            alert('Cliente atualizado com sucesso!');
+            handleCloseModal();
+            fetchClients();
+        }
+    };
+
+    const handleDeleteClient = async () => {
+        if (!selectedClient) return;
+        if (!window.confirm(`Tem certeza que deseja excluir o cliente ${selectedClient.name}?`)) return;
+
+        setActionLoading(true);
+        const { error } = await supabase
+            .from('clients')
+            .delete()
+            .eq('id', selectedClient.id);
+
+        setActionLoading(false);
+
+        if (error) {
+            alert(`Erro ao excluir cliente: ${error.message}`);
+        } else {
+            alert('Cliente excluído com sucesso!');
+            handleCloseModal();
+            fetchClients();
+        }
+    };
+
     const filteredClients = clients.filter((client) => {
         const matchesSearch = client.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                               client.contact?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -125,7 +193,6 @@ export function ClientRegister() {
                         >
                             <option value="Aluno">Aluno</option>
                             <option value="Visitante">Visitante</option>
-                            <option value="Pesquisador">Pesquisador</option>
                         </select>
                     </div>
 
@@ -143,7 +210,7 @@ export function ClientRegister() {
                 <div>
                     <span style={styles.miniCategory}>ATENDIMENTO</span>
                     <h2 style={styles.title}>Clientes</h2>
-                    <p style={styles.subtitle}>Cadastros de alunos, visitantes e pesquisadores atendidos pelo museu.</p>
+                    <p style={styles.subtitle}>Cadastros de alunose e visitantes atendidos pelo museu.</p>
                 </div>
                 <button onClick={() => setView('form')} style={styles.newButton}>
                     + Novo cliente
@@ -167,7 +234,6 @@ export function ClientRegister() {
                         <option value="all">Tipo de cliente: todos</option>
                         <option value="Aluno">Aluno</option>
                         <option value="Visitante">Visitante</option>
-                        <option value="Pesquisador">Pesquisador</option>
                     </select>
                 </div>
 
@@ -198,7 +264,6 @@ export function ClientRegister() {
                                     filteredClients.map((client, index) => {
                                         let badgeStyle = styles.badgeAluno;
                                         if (client.type === 'Visitante') badgeStyle = styles.badgeVisitante;
-                                        if (client.type === 'Pesquisador') badgeStyle = styles.badgePesquisador;
 
                                         return (
                                             <tr key={client.id || index} style={styles.tr}>
@@ -218,10 +283,10 @@ export function ClientRegister() {
                                                 </td>
                                                 <td style={styles.td}>
                                                     <button 
-                                                        onClick={() => alert(`Detalhes do cliente: ${client.name}`)}
+                                                        onClick={() => handleOpenModal(client)}
                                                         style={styles.actionBtn}
                                                     >
-                                                        Ver detalhes
+                                                        Gerenciar
                                                     </button>
                                                 </td>
                                             </tr>
@@ -233,6 +298,132 @@ export function ClientRegister() {
                     </div>
                 )}
             </div>
+
+            {/* caixa de diálogo / modal */}
+            {isModalOpen && (
+                <div style={modalStyles.overlay}>
+                    <div style={modalStyles.card}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+                            <h3 style={{ margin: 0, color: '#1a1a1a', fontSize: '18px' }}>Gerenciar Cliente</h3>
+                            <button onClick={handleCloseModal} style={modalStyles.closeBtn}>✕</button>
+                        </div>
+
+                        <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Nome Completo:</label>
+                                <input
+                                    type="text"
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    required
+                                    style={styles.input}
+                                />
+                            </div>
+
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Contato (Telefone / WhatsApp):</label>
+                                <input
+                                    type="text"
+                                    value={editContact}
+                                    onChange={(e) => setEditContact(e.target.value)}
+                                    required
+                                    style={styles.input}
+                                />
+                            </div>
+
+                            <div style={styles.fieldGroup}>
+                                <label style={styles.label}>Tipo de Cliente:</label>
+                                <select
+                                    value={editClientType}
+                                    onChange={(e) => setEditClientType(e.target.value)}
+                                    style={styles.input}
+                                >
+                                    <option value="Aluno">Aluno</option>
+                                    <option value="Visitante">Visitante</option>
+                                </select>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '12px' }}>
+                                <button 
+                                    type="button" 
+                                    onClick={handleDeleteClient} 
+                                    disabled={actionLoading}
+                                    style={modalStyles.deleteBtn}
+                                >
+                                    Deletar
+                                </button>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button 
+                                        type="button" 
+                                        onClick={handleCloseModal} 
+                                        style={modalStyles.cancelBtn}
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        disabled={actionLoading}
+                                        style={styles.submitButton}
+                                    >
+                                        {actionLoading ? 'Salvando...' : 'Salvar Alterações'}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
+const modalStyles = {
+    overlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 2000,
+        padding: '20px',
+    },
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: '12px',
+        width: '100%',
+        maxWidth: '450px',
+        padding: '24px',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+        fontFamily: 'sans-serif',
+    },
+    closeBtn: {
+        background: 'none',
+        border: 'none',
+        fontSize: '16px',
+        cursor: 'pointer',
+        color: '#64748b',
+    },
+    deleteBtn: {
+        backgroundColor: '#fee2e2',
+        color: '#991b1b',
+        border: '1px solid #fca5a5',
+        padding: '8px 12px',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '13px',
+        fontWeight: '500',
+    },
+    cancelBtn: {
+        backgroundColor: '#f1f5f9',
+        color: '#334155',
+        border: '1px solid #cbd5e1',
+        padding: '8px 14px',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '13px',
+    }
+};
