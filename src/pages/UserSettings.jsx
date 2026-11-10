@@ -38,25 +38,6 @@ export function UserSettings() {
             setError('Erro ao atualizar perfil: ' + err.message);
         }
     };
-    /*
-    const handleUpdateEmail = async (e) => {
-        e.preventDefault();
-        setMessage('');
-        setError('');
-
-        try {
-            const { error } = await supabase.auth.updateUser({ 
-                email: newEmail 
-            });
-
-            if (error) throw error;
-            
-            setMessage('E-mail de alteração enviado! Verifique sua nova caixa de entrada para confirmar a mudança.');
-        } catch (err) {
-            setError('Erro ao alterar e-mail: ' + err.message);
-        }
-        };
-    */
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
         setMessage('');

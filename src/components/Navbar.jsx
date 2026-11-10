@@ -6,7 +6,6 @@ export function Navbar({ onNavigate }) {
     const [openDropdown, setOpenDropdown] = useState(null);
     const [userName, setUserName] = useState('Usuário');
 
-    // Busca o nome/e-mail do usuário logado no Supabase ao carregar
     useEffect(() => {
         async function fetchUser() {
             const { data: { user } } = await supabase.auth.getUser();
@@ -31,7 +30,7 @@ export function Navbar({ onNavigate }) {
     return (
         <nav style={styles.nav}>
             <div style={styles.logoContainer} onClick={() => onNavigate('home')} role="button">
-                <h1 style={styles.logo}>Museu & Biblioteca</h1>
+                <h1 style={styles.logo}>Museu (logo)</h1>
             </div>
 
             <div style={styles.links}>
@@ -39,7 +38,6 @@ export function Navbar({ onNavigate }) {
                     Início
                 </button>
 
-                {/* Dropdown: Atendimento (Usuários e Clientes) */}
                 <div
                     style={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('attendance')}
@@ -64,7 +62,6 @@ export function Navbar({ onNavigate }) {
                     )}
                 </div>
 
-                {/* Dropdown: Patrimônio & Insumos */}
                 <div
                     style={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('patrimony')}
@@ -95,7 +92,6 @@ export function Navbar({ onNavigate }) {
                     )}
                 </div>
 
-                {/* Dropdown: Relatórios */}
                 <div 
                     style={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('reports')}
@@ -132,7 +128,6 @@ export function Navbar({ onNavigate }) {
                     )}
                 </div>
 
-                {/* Dropdown: Usuário / Perfil (Preferências e Logout) */}
                 <div 
                     style={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('userMenu')}

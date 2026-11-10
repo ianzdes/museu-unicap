@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import { Login } from './pages/Login'; // Certifique-se de que o caminho do Login está correto
+import { Login } from './pages/Login';
 import { Navbar } from './components/Navbar';
-import { UserRegister } from './pages/UserRegister';
+import { UserRegister } from './pages/management/UserRegister';
 import { FilamentReport } from './pages/reports/FilamentReportPage';
 import { MachineUsage } from './pages/reports/MachineUsage';
 import { LoanHistory } from './pages/reports/LoanHistory';
 import { MaintenanceHistory } from './pages/reports/MaintenanceHistory';
-import { SupplyRegister } from './pages/SupplyRegister';
-import { MachineRegister } from './pages/MachineRegister';
-import { LoanRegister } from './pages/LoanRegister';
-import { ClientRegister } from './pages/ClientRegister';
+import { SupplyRegister } from './pages/patrimony/SupplyRegister';
+import { MachineRegister } from './pages/patrimony/MachineRegister';
+import { LoanRegister } from './pages/patrimony/LoanRegister';
+import { ClientRegister } from './pages/management/ClientRegister';
 import { UserSettings } from './pages/UserSettings';
-import { HomePage } from './pages/HomePage';
+import { HomePage } from './pages/homepage/HomePage';
+import { Footer } from './components/Footer';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -104,12 +105,14 @@ function App() {
   };
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
       <Navbar onNavigate={setCurrentRoute} />
 
       <main style={{ padding: '20px' }}>
         {renderContent()}
       </main>
+
+      <Footer onNavigate={setCurrentRoute} />
     </div>
   );
 }

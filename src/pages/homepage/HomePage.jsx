@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
-import { styles } from '../styles/reportStyles';
+import { supabase } from '../../supabaseClient';
+import { styles } from '../../styles/reportStyles';
 
 export function HomePage({ onNavigate }) {
     const [stats, setStats] = useState({
@@ -13,20 +13,17 @@ export function HomePage({ onNavigate }) {
     const [userName, setUserName] = useState('Colaborador');
     const [loading, setLoading] = useState(true);
 
-    // Busca contagens reais e dados do usuário logado no Supabase
     useEffect(() => {
         async function fetchDashboardData() {
             try {
                 setLoading(true);
                 
-                // Busca nome do usuário atual
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
                     const name = user.user_metadata?.name || user.email.split('@')[0];
                     setUserName(name);
                 }
 
-                // Consultas paralelas no Supabase para montar o dashboard
                 const [
                     usersRes, 
                     clientsRes, 
@@ -60,7 +57,6 @@ export function HomePage({ onNavigate }) {
 
     return (
         <div style={styles.container}>
-            {/* 1. Banner Superior de Boas-Vindas */}
             <div style={dashStyles.heroBanner}>
                 <div>
                     <span style={styles.miniCategory}>SISTEMA INTEGRADO DE GESTÃO</span>
@@ -71,7 +67,6 @@ export function HomePage({ onNavigate }) {
                 </div>
             </div>
 
-            {/* 2. Grid de Indicadores Principais (Cards Estilo Dashboard) */}
             <div style={dashStyles.metricsGrid}>
                 <div style={dashStyles.metricCard} onClick={() => onNavigate('users')} role="button">
                     <div style={dashStyles.metricHeader}>
@@ -120,11 +115,9 @@ export function HomePage({ onNavigate }) {
                 </div>
             </div>
 
-            {/* 3. Seções de Atalhos e Módulos Divididos por Quadrantes */}
             <h3 style={dashStyles.sectionTitle}>Acesso Rápido</h3>
 
             <div style={dashStyles.modulesGrid}>
-                {/* Bloco de Atendimento e Usuários */}
                 <div style={dashStyles.moduleBox}>
                     <div style={dashStyles.moduleHeader}>
                         <h4 style={dashStyles.moduleTitle}>Atendimento & Pessoas</h4>
@@ -139,7 +132,6 @@ export function HomePage({ onNavigate }) {
                     </div>
                 </div>
 
-                {/* Bloco de Patrimônio e Insumos */}
                 <div style={dashStyles.moduleBox}>
                     <div style={dashStyles.moduleHeader}>
                         <h4 style={dashStyles.moduleTitle}>Patrimônio & Estoque</h4>
@@ -157,7 +149,6 @@ export function HomePage({ onNavigate }) {
                     </div>
                 </div>
 
-                {/* Bloco de Relatórios Analíticos */}
                 <div style={dashStyles.moduleBox}>
                     <div style={dashStyles.moduleHeader}>
                         <h4 style={dashStyles.moduleTitle}>Relatórios & Históricos</h4>

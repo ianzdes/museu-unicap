@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
-import { styles } from '../styles/reportStyles';
+import { supabase } from '../../supabaseClient';
+import styles from './ClientRegister.module.css';
 
 export function ClientRegister() {
     const [view, setView] = useState('list'); 
@@ -151,52 +151,52 @@ export function ClientRegister() {
 
     if (view === 'form') {
         return (
-            <div style={styles.card}>
-                <div style={styles.formHeader}>
+            <div className={styles.card}>
+                <div className={styles.formHeader}>
                     <h2>Novo Cliente</h2>
-                    <button onClick={() => setView('list')} style={styles.backButton}>
+                    <button onClick={() => setView('list')} className={styles.backButton}>
                         ← Voltar para a lista
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} style={styles.form}>
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Nome Completo:</label>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Nome Completo:</label>
                         <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: João Silva"
                         /> 
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Contato (Telefone / WhatsApp):</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Contato (Telefone / WhatsApp):</label>
                         <input
                             type="text"
                             value={contact}
                             onChange={(e) => setContact(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="(81) 99999-2001"
                         />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Tipo de Cliente:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Tipo de Cliente:</label>
                         <select
                             value={clientType}
                             onChange={(e) => setClientType(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                         >
                             <option value="Aluno">Aluno</option>
                             <option value="Visitante">Visitante</option>
                         </select>
                     </div>
 
-                    <button type="submit" disabled={submitting} style={styles.submitButton}>
+                    <button type="submit" disabled={submitting} className={styles.submitButton}>
                         {submitting ? 'Salvando...' : 'Salvar Cliente'}
                     </button>
                 </form>
@@ -205,31 +205,31 @@ export function ClientRegister() {
     }
 
     return (
-        <div style={styles.container}>
-            <div style={styles.headerRow}>
+        <div className={styles.container}>
+            <div className={styles.headerRow}>
                 <div>
-                    <span style={styles.miniCategory}>ATENDIMENTO</span>
-                    <h2 style={styles.title}>Clientes</h2>
-                    <p style={styles.subtitle}>Cadastros de alunose e visitantes atendidos pelo museu.</p>
+                    <span className={styles.miniCategory}>ATENDIMENTO</span>
+                    <h2 className={styles.title}>Clientes</h2>
+                    <p className={styles.subtitle}>Cadastros de alunos e visitantes atendidos pelo museu.</p>
                 </div>
-                <button onClick={() => setView('form')} style={styles.newButton}>
+                <button onClick={() => setView('form')} className={styles.newButton}>
                     + Novo cliente
                 </button>
             </div>
 
-            <div style={styles.tableCard}>
-                <div style={styles.filterBar}>
+            <div className={styles.tableCard}>
+                <div className={styles.filterBar}>
                     <input
                         type="text"
                         placeholder="Pesquisar por nome ou contato..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        style={styles.searchInput}
+                        className={styles.searchInput}
                     />
                     <select 
                         value={typeFilter} 
                         onChange={(e) => setTypeFilter(e.target.value)}
-                        style={styles.selectFilter}
+                        className={styles.selectFilter}
                     >
                         <option value="all">Tipo de cliente: todos</option>
                         <option value="Aluno">Aluno</option>
@@ -241,16 +241,16 @@ export function ClientRegister() {
                     <div style={{ padding: '30px', textAlign: 'center', color: '#7f8c8d' }}>Carregando clientes...</div>
                 ) : (
                     <div style={{ overflowX: 'auto' }}>
-                        <table style={styles.table}>
+                        <table className={styles.table}>
                             <thead>
-                                <tr style={styles.thRow}>
-                                    <th style={styles.th}>ID</th>
-                                    <th style={styles.th}>NOME</th>
-                                    <th style={styles.th}>CONTATO</th>
-                                    <th style={styles.th}>DATA DE REGISTRO</th>
-                                    <th style={styles.th}>ÚLTIMO EMPRÉSTIMO</th>
-                                    <th style={styles.th}>TIPO</th>
-                                    <th style={styles.th}>AÇÕES</th>
+                                <tr className={styles.thRow}>
+                                    <th className={styles.th}>ID</th>
+                                    <th className={styles.th}>NOME</th>
+                                    <th className={styles.th}>CONTATO</th>
+                                    <th className={styles.th}>DATA DE REGISTRO</th>
+                                    <th className={styles.th}>ÚLTIMO EMPRÉSTIMO</th>
+                                    <th className={styles.th}>TIPO</th>
+                                    <th className={styles.th}>AÇÕES</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -266,25 +266,25 @@ export function ClientRegister() {
                                         if (client.type === 'Visitante') badgeStyle = styles.badgeVisitante;
 
                                         return (
-                                            <tr key={client.id || index} style={styles.tr}>
-                                                <td style={styles.td}>#{String(index + 1).padStart(3, '0')}</td>
-                                                <td style={{...styles.td, fontWeight: '500'}}>{client.name}</td>
-                                                <td style={styles.td}>{client.contact}</td>
-                                                <td style={styles.td}>
+                                            <tr key={client.id || index} className={styles.tr}>
+                                                <td className={styles.td}>#{String(index + 1).padStart(3, '0')}</td>
+                                                <td style={{ fontWeight: '500' }} className={styles.td}>{client.name}</td>
+                                                <td className={styles.td}>{client.contact}</td>
+                                                <td className={styles.td}>
                                                     {client.created_at ? new Date(client.created_at).toLocaleDateString('pt-BR') : '—'}
                                                 </td>
-                                                <td style={styles.td}>
+                                                <td className={styles.td}>
                                                     {client.last_loan ? new Date(client.last_loan).toLocaleDateString('pt-BR') : '—'}
                                                 </td>
-                                                <td style={styles.td}>
-                                                    <span style={badgeStyle}>
+                                                <td className={styles.td}>
+                                                    <span className={badgeStyle}>
                                                         ● {client.type || 'Aluno'}
                                                     </span>
                                                 </td>
-                                                <td style={styles.td}>
+                                                <td className={styles.td}>
                                                     <button 
                                                         onClick={() => handleOpenModal(client)}
-                                                        style={styles.actionBtn}
+                                                        className={styles.actionBtn}
                                                     >
                                                         Gerenciar
                                                     </button>
@@ -301,42 +301,42 @@ export function ClientRegister() {
 
             {/* caixa de diálogo / modal */}
             {isModalOpen && (
-                <div style={modalStyles.overlay}>
-                    <div style={modalStyles.card}>
+                <div className={styles.overlay}>
+                    <div className={styles.card}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
                             <h3 style={{ margin: 0, color: '#1a1a1a', fontSize: '18px' }}>Gerenciar Cliente</h3>
-                            <button onClick={handleCloseModal} style={modalStyles.closeBtn}>✕</button>
+                            <button onClick={handleCloseModal} className={styles.closeBtn}>✕</button>
                         </div>
 
-                        <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Nome Completo:</label>
+                        <form onSubmit={handleSaveEdit} className={styles.form}>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Nome Completo:</label>
                                 <input
                                     type="text"
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
                                     required
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Contato (Telefone / WhatsApp):</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Contato (Telefone / WhatsApp):</label>
                                 <input
                                     type="text"
                                     value={editContact}
                                     onChange={(e) => setEditContact(e.target.value)}
                                     required
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Tipo de Cliente:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Tipo de Cliente:</label>
                                 <select
                                     value={editClientType}
                                     onChange={(e) => setEditClientType(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 >
                                     <option value="Aluno">Aluno</option>
                                     <option value="Visitante">Visitante</option>
@@ -348,7 +348,7 @@ export function ClientRegister() {
                                     type="button" 
                                     onClick={handleDeleteClient} 
                                     disabled={actionLoading}
-                                    style={modalStyles.deleteBtn}
+                                    className={styles.deleteBtn}
                                 >
                                     Deletar
                                 </button>
@@ -356,14 +356,14 @@ export function ClientRegister() {
                                     <button 
                                         type="button" 
                                         onClick={handleCloseModal} 
-                                        style={modalStyles.cancelBtn}
+                                        className={styles.cancelBtn}
                                     >
                                         Cancelar
                                     </button>
                                     <button 
                                         type="submit" 
                                         disabled={actionLoading}
-                                        style={styles.submitButton}
+                                        className={styles.submitButton}
                                     >
                                         {actionLoading ? 'Salvando...' : 'Salvar Alterações'}
                                     </button>
@@ -376,54 +376,3 @@ export function ClientRegister() {
         </div>
     );
 }
-
-const modalStyles = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 2000,
-        padding: '20px',
-    },
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: '12px',
-        width: '100%',
-        maxWidth: '450px',
-        padding: '24px',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-        fontFamily: 'sans-serif',
-    },
-    closeBtn: {
-        background: 'none',
-        border: 'none',
-        fontSize: '16px',
-        cursor: 'pointer',
-        color: '#64748b',
-    },
-    deleteBtn: {
-        backgroundColor: '#fee2e2',
-        color: '#991b1b',
-        border: '1px solid #fca5a5',
-        padding: '8px 12px',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '13px',
-        fontWeight: '500',
-    },
-    cancelBtn: {
-        backgroundColor: '#f1f5f9',
-        color: '#334155',
-        border: '1px solid #cbd5e1',
-        padding: '8px 14px',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '13px',
-    }
-};
