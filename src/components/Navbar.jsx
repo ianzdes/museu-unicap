@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { UserSettings } from '../pages/UserSettings';
+import styles from './Navbar.module.css';
 
 export function Navbar({ onNavigate }) {
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -9,11 +10,13 @@ export function Navbar({ onNavigate }) {
     useEffect(() => {
         async function fetchUser() {
             const { data: { user } } = await supabase.auth.getUser();
+
             if (user) {
                 const name = user.user_metadata?.name || user.email.split('@')[0];
                 setUserName(name);
             }
         }
+
         fetchUser();
     }, []);
 
@@ -28,33 +31,49 @@ export function Navbar({ onNavigate }) {
     };
 
     return (
-        <nav style={styles.nav}>
-            <div style={styles.logoContainer} onClick={() => onNavigate('home')} role="button">
-                <h1 style={styles.logo}>Museu (logo)</h1>
+        <nav className={styles.nav}>
+            {/* Logo */}
+            <div
+                className={styles.logoContainer}
+                onClick={() => onNavigate('home')}
+                role="button"
+            >
+                <h1 className={styles.logo}>
+                    Museu (logo)
+                </h1>
             </div>
 
-            <div style={styles.links}>
-                <button style={styles.navButton} onClick={() => handleMenuClick('homepage')}>
+            {/* Links de navegação */}
+            <div className={styles.links}>
+                <button
+                    className={styles.navButton}
+                    onClick={() => handleMenuClick('homepage')}
+                >
                     Início
                 </button>
 
+                {/* Gestão */}
                 <div
-                    style={styles.dropdownContainer}
+                    className={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('attendance')}
                     onMouseLeave={() => setOpenDropdown(null)}
                 >
-                    <button style={styles.navButton}>Gestão ▾</button>
+                    <button className={styles.navButton}>
+                        Gestão ▾
+                    </button>
+
                     {openDropdown === 'attendance' && (
-                        <div style={styles.dropdownMenu}>
+                        <div className={styles.dropdownMenu}>
                             <button
                                 onClick={() => handleMenuClick('users')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
                                 Usuários (Equipe)
                             </button>
+
                             <button
                                 onClick={() => handleMenuClick('clients')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
                                 Clientes (Alunos/Visitantes)
                             </button>
@@ -62,91 +81,114 @@ export function Navbar({ onNavigate }) {
                     )}
                 </div>
 
+                {/* Patrimônio */}
                 <div
-                    style={styles.dropdownContainer}
+                    className={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('patrimony')}
                     onMouseLeave={() => setOpenDropdown(null)}
                 >
-                    <button style={styles.navButton}>Patrimônio ▾</button>
+                    <button className={styles.navButton}>
+                        Patrimônio ▾
+                    </button>
+
                     {openDropdown === 'patrimony' && (
-                        <div style={styles.dropdownMenu}>
+                        <div className={styles.dropdownMenu}>
                             <button
                                 onClick={() => handleMenuClick('register:machines')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
                                 Máquinas (3D / Scanners)
                             </button>
+
                             <button
                                 onClick={() => handleMenuClick('register:machine-loan')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
-                                Equipamentos p/ Empréstimo
+                                Equipamentos para Empréstimo
                             </button>
+
                             <button
                                 onClick={() => handleMenuClick('register:supplies')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
-                                Suprimentos / Insumos
+                                Suprimentos e Insumos
                             </button>
                         </div>
                     )}
                 </div>
 
-                <div 
-                    style={styles.dropdownContainer}
+                {/* Relatórios */}
+                <div
+                    className={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('reports')}
                     onMouseLeave={() => setOpenDropdown(null)}
                 >
-                    <button style={styles.navButton}>Relatórios ▾</button>
+                    <button className={styles.navButton}>
+                        Relatórios ▾
+                    </button>
+
                     {openDropdown === 'reports' && (
-                        <div style={styles.dropdownMenu}>
-                            <button 
+                        <div className={styles.dropdownMenu}>
+                            <button
                                 onClick={() => handleMenuClick('reports:filament-consumption')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
                                 Consumo de Filamentos
                             </button>
+
                             <button
                                 onClick={() => handleMenuClick('reports:machine-usage')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
                                 Uso das Máquinas
                             </button>
+
                             <button
                                 onClick={() => handleMenuClick('reports:loan-history')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
                                 Histórico de Empréstimos
                             </button>
+
                             <button
                                 onClick={() => handleMenuClick('reports:maintenance-history')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
-                                Manutenções
+                                Histórico de Manutenções
+                            </button>
+
+                            <button
+                                onClick={() => handleMenuClick('reports:production-report')}
+                                className={styles.dropdownItem}
+                            >
+                                Histórico de produção
                             </button>
                         </div>
                     )}
                 </div>
 
-                <div 
-                    style={styles.dropdownContainer}
+                {/* Menu do usuário */}
+                <div
+                    className={styles.dropdownContainer}
                     onMouseEnter={() => setOpenDropdown('userMenu')}
                     onMouseLeave={() => setOpenDropdown(null)}
                 >
-                    <button style={styles.userNavButton}>
+                    <button className={styles.userNavButton}>
                         {userName} ▾
                     </button>
+
                     {openDropdown === 'userMenu' && (
-                        <div style={styles.dropdownMenu}>
+                        <div className={styles.dropdownMenu}>
                             <button
                                 onClick={() => handleMenuClick('user-settings')}
-                                style={styles.dropdownItem}
+                                className={styles.dropdownItem}
                             >
                                 Preferências
                             </button>
+
                             <button
                                 onClick={handleLogout}
-                                style={{ ...styles.dropdownItem, color: '#ffb3b3' }}
+                                className={`${styles.dropdownItem} ${styles.logoutItem}`}
                             >
                                 Sair (Logout)
                             </button>
@@ -157,81 +199,3 @@ export function Navbar({ onNavigate }) {
         </nav>
     );
 }
-
-const styles = {
-    nav: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#690013', 
-        color: '#fff',
-        padding: '15px 30px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-        fontFamily: 'sans-serif',
-    },
-    logoContainer: {
-        cursor: 'pointer',
-    },
-    logo: {
-        margin: 0,
-        fontSize: '1.25rem',
-        fontWeight: 'bold',
-        letterSpacing: '0.5px',
-    },
-    links: {
-        display: 'flex',
-        gap: '15px',
-        alignItems: 'center',
-    },
-    navButton: {
-        background: 'none',
-        border: 'none',
-        color: '#fff',
-        fontSize: '15px',
-        fontWeight: '500',
-        cursor: 'pointer',
-        padding: '8px 12px',
-        borderRadius: '4px',
-        transition: 'background-color 0.2s',
-    },
-    userNavButton: {
-        background: 'rgba(255, 255, 255, 0.1)',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        color: '#fff',
-        fontSize: '15px',
-        fontWeight: '600',
-        cursor: 'pointer',
-        padding: '8px 14px',
-        borderRadius: '6px',
-        transition: 'background-color 0.2s',
-    },
-    dropdownContainer: {
-        position: 'relative',
-        display: 'inline-block',
-    },
-    dropdownMenu: {
-        position: 'absolute',
-        top: '100%',
-        right: 0,
-        backgroundColor: '#690013',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        borderRadius: '6px',
-        boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.35)',
-        display: 'flex',
-        flexDirection: 'column',
-        minWidth: '200px',
-        zIndex: 100,
-        padding: '6px 0',
-    },
-    dropdownItem: {
-        background: 'none',
-        border: 'none',
-        color: '#fff',
-        fontSize: '14px',
-        textAlign: 'left',
-        padding: '10px 16px',
-        cursor: 'pointer',
-        width: '100%',
-        fontWeight: 'normal',
-    },
-};

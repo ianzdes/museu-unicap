@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient';
-import { styles } from '../../styles/reportStyles';
+import { supabase } from '../../../supabaseClient';
+import styles from './SupplyRegister.module.css';
 
 export function SupplyRegister() {
-    const [view, setView] = useState('list'); 
-    
+    const [view, setView] = useState('list');
+
     const [supplies, setSupplies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -14,8 +14,8 @@ export function SupplyRegister() {
     const [name, setName] = useState('');
     const [material, setMaterial] = useState('PLA');
     const [color, setColor] = useState('');
-    const [purchaseKg, setPurchaseKg] = useState('1');
-    const [currentStockGrams, setCurrentStockGrams] = useState('1000');
+    const [purchaseKg, setPurchaseKg] = useState(1);
+    const [currentStockGrams, setCurrentStockGrams] = useState(1000);
     const [status, setStatus] = useState('Em Estoque');
     const [submitting, setSubmitting] = useState(false);
 
@@ -56,6 +56,11 @@ export function SupplyRegister() {
             return;
         }
 
+        if (purchaseKg || currentStockGrams < 0) {
+            alert("A quantidade comprada ou o estoque atual não podem ser negativos.");
+            return;
+        }
+
         setSubmitting(true);
 
         const stockInGrams = Number(currentStockGrams) || (Number(purchaseKg) * 1000);
@@ -82,8 +87,8 @@ export function SupplyRegister() {
             setName('');
             setMaterial('PLA');
             setColor('');
-            setPurchaseKg('1');
-            setCurrentStockGrams('1000');
+            setPurchaseKg(1);
+            setCurrentStockGrams(1000);
             setStatus('Em Estoque');
             setView('list');
             fetchSupplies();
@@ -158,7 +163,7 @@ export function SupplyRegister() {
     };
 
     const filteredSupplies = supplies.filter((item) => {
-        const matchesSearch = item.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        const matchesSearch = item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               item.color?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               item.material?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesMaterial = materialFilter === 'all' || item.material === materialFilter;
@@ -169,33 +174,33 @@ export function SupplyRegister() {
 
     if (view === 'form') {
         return (
-            <div style={styles.card}>
-                <div style={styles.formHeader}>
+            <div className={styles.card}>
+                <div className={styles.formHeader}>
                     <h2>Novo Suprimento / Insumo</h2>
-                    <button onClick={() => setView('list')} style={styles.backButton}>
+                    <button onClick={() => setView('list')} className={styles.backButton}>
                         ← Voltar para a lista
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} style={styles.form}>
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Nome do Suprimento / Filamento:</label>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Nome do Suprimento / Filamento:</label>
                         <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: Filamento PLA Premium 1.75mm"
-                        /> 
+                        />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Tipo de Material:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Tipo de Material:</label>
                         <select
                             value={material}
                             onChange={(e) => setMaterial(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                         >
                             <option value="PLA">PLA</option>
                             <option value="ABS">ABS</option>
@@ -205,19 +210,19 @@ export function SupplyRegister() {
                         </select>
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Cor / Acabamento:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Cor / Acabamento:</label>
                         <input
                             type="text"
                             value={color}
                             onChange={(e) => setColor(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: Preto, Branco, Transparente"
                         />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Quantidade Comprada (em Kg):</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Quantidade Comprada (em Kg):</label>
                         <input
                             type="number"
                             step="0.1"
@@ -227,29 +232,29 @@ export function SupplyRegister() {
                                 setCurrentStockGrams(String(Number(e.target.value) * 1000));
                             }}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: 1 (para rolo de 1kg)"
                         />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Estoque Atual Fracionado (em Gramas/g):</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Estoque Atual Fracionado (em Gramas/g):</label>
                         <input
                             type="number"
                             value={currentStockGrams}
                             onChange={(e) => setCurrentStockGrams(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: 850 (restante do rolo)"
                         />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Situação do Estoque:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Situação do Estoque:</label>
                         <select
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                         >
                             <option value="Em Estoque">Em Estoque</option>
                             <option value="Baixo Estoque">Baixo Estoque</option>
@@ -257,7 +262,7 @@ export function SupplyRegister() {
                         </select>
                     </div>
 
-                    <button type="submit" disabled={submitting} style={styles.submitButton}>
+                    <button type="submit" disabled={submitting} className={styles.submitButton}>
                         {submitting ? 'Salvando...' : 'Salvar Insumo'}
                     </button>
                 </form>
@@ -266,31 +271,31 @@ export function SupplyRegister() {
     }
 
     return (
-        <div style={styles.container}>
-            <div style={styles.headerRow}>
+        <div className={styles.container}>
+            <div className={styles.headerRow}>
                 <div>
-                    <span style={styles.miniCategory}>ESTOQUE & INSUMOS</span>
-                    <h2 style={styles.title}>Suprimentos de Impressão</h2>
-                    <p style={styles.subtitle}>Gerencie rolos de filamento, resinas e controle de consumo fracionado.</p>
+                    <span className={styles.miniCategory}>ESTOQUE & INSUMOS</span>
+                    <h2 className={styles.title}>Suprimentos de Impressão</h2>
+                    <p className={styles.subtitle}>Gerencie rolos de filamento, resinas e controle de consumo fracionado.</p>
                 </div>
-                <button onClick={() => setView('form')} style={styles.newButton}>
+                <button onClick={() => setView('form')} className={styles.newButton}>
                     + Novo insumo
                 </button>
             </div>
 
-            <div style={styles.tableCard}>
-                <div style={styles.filterBar}>
+            <div className={styles.tableCard}>
+                <div className={styles.filterBar}>
                     <input
                         type="text"
                         placeholder="Pesquisar por nome, cor ou material..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        style={styles.searchInput}
+                        className={styles.searchInput}
                     />
-                    <select 
-                        value={materialFilter} 
+                    <select
+                        value={materialFilter}
                         onChange={(e) => setMaterialFilter(e.target.value)}
-                        style={styles.selectFilter}
+                        className={styles.selectFilter}
                     >
                         <option value="all">Material: todos</option>
                         <option value="PLA">PLA</option>
@@ -298,10 +303,10 @@ export function SupplyRegister() {
                         <option value="PETG">PETG</option>
                         <option value="Resina">Resina</option>
                     </select>
-                    <select 
-                        value={statusFilter} 
+                    <select
+                        value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        style={styles.selectFilter}
+                        className={styles.selectFilter}
                     >
                         <option value="all">Status: todos</option>
                         <option value="Em Estoque">Em Estoque</option>
@@ -311,54 +316,54 @@ export function SupplyRegister() {
                 </div>
 
                 {loading ? (
-                    <div style={{ padding: '30px', textAlign: 'center', color: '#7f8c8d' }}>Carregando insumos...</div>
+                    <div className={styles.loadingBox}>Carregando insumos...</div>
                 ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={styles.table}>
+                    <div className={styles.tableScroll}>
+                        <table className={styles.table}>
                             <thead>
-                                <tr style={styles.thRow}>
-                                    <th style={styles.th}>ID</th>
-                                    <th style={styles.th}>INSEMO / FILAMENTO</th>
-                                    <th style={styles.th}>MATERIAL</th>
-                                    <th style={styles.th}>COR</th>
-                                    <th style={styles.th}>COMPRA (KG)</th>
-                                    <th style={styles.th}>ESTOQUE ATUAL (G)</th>
-                                    <th style={styles.th}>STATUS</th>
-                                    <th style={styles.th}>AÇÕES</th>
+                                <tr className={styles.thRow}>
+                                    <th className={styles.th}>ID</th>
+                                    <th className={styles.th}>INSUMO / FILAMENTO</th>
+                                    <th className={styles.th}>MATERIAL</th>
+                                    <th className={styles.th}>COR</th>
+                                    <th className={styles.th}>COMPRA (KG)</th>
+                                    <th className={styles.th}>ESTOQUE ATUAL (G)</th>
+                                    <th className={styles.th}>STATUS</th>
+                                    <th className={styles.th}>AÇÕES</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredSupplies.length === 0 ? (
                                     <tr>
-                                        <td colSpan="8" style={{ padding: '20px', textAlign: 'center', color: '#7f8c8d' }}>
+                                        <td colSpan="8" className={styles.emptyCell}>
                                             Nenhum insumo encontrado.
                                         </td>
                                     </tr>
                                 ) : (
                                     filteredSupplies.map((item, index) => {
-                                        let badgeStyle = styles.badgeDisponivel;
-                                        if (item.status === 'Baixo Estoque' || item.current_stock_grams <= 200) badgeStyle = styles.badgeBaixo;
-                                        if (item.status === 'Esgotado' || item.current_stock_grams <= 0) badgeStyle = styles.badgeEsgotado;
+                                        let badgeClass = styles.badgeActive;
+                                        if (item.status === 'Baixo Estoque' || item.current_stock_grams <= 200) badgeClass = styles.badgeWarning;
+                                        if (item.status === 'Esgotado' || item.current_stock_grams <= 0) badgeClass = styles.badgeInactive;
 
                                         return (
-                                            <tr key={item.id || index} style={styles.tr}>
-                                                <td style={styles.td}>#{String(index + 1).padStart(3, '0')}</td>
-                                                <td style={{...styles.td, fontWeight: '500'}}>{item.name}</td>
-                                                <td style={styles.td}>{item.material || 'PLA'}</td>
-                                                <td style={styles.td}>{item.color || 'Preto'}</td>
-                                                <td style={styles.td}>{item.purchase_kg ? `${item.purchase_kg} Kg` : '1 Kg'}</td>
-                                                <td style={{...styles.td, fontWeight: 'bold'}}>
+                                            <tr key={item.id || index} className={styles.tr}>
+                                                <td className={styles.td}>#{String(index + 1).padStart(3, '0')}</td>
+                                                <td className={`${styles.td} ${styles.tdName}`}>{item.name}</td>
+                                                <td className={styles.td}>{item.material || 'PLA'}</td>
+                                                <td className={styles.td}>{item.color || 'Preto'}</td>
+                                                <td className={styles.td}>{item.purchase_kg ? `${item.purchase_kg} Kg` : '1 Kg'}</td>
+                                                <td className={`${styles.td} ${styles.tdStrong}`}>
                                                     {item.current_stock_grams != null ? `${item.current_stock_grams}g` : '1000g'}
                                                 </td>
-                                                <td style={styles.td}>
-                                                    <span style={badgeStyle}>
+                                                <td className={styles.td}>
+                                                    <span className={`${styles.badge} ${badgeClass}`}>
                                                         ● {item.current_stock_grams <= 0 ? 'Esgotado' : item.current_stock_grams <= 200 ? 'Baixo Estoque' : 'Em Estoque'}
                                                     </span>
                                                 </td>
-                                                <td style={styles.td}>
-                                                    <button 
+                                                <td className={styles.td}>
+                                                    <button
                                                         onClick={() => handleOpenModal(item)}
-                                                        style={styles.actionBtn}
+                                                        className={styles.actionBtn}
                                                     >
                                                         Gerenciar
                                                     </button>
@@ -375,31 +380,31 @@ export function SupplyRegister() {
 
             {/* caixa de diálogo / modal */}
             {isModalOpen && (
-                <div style={modalStyles.overlay}>
-                    <div style={modalStyles.card}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-                            <h3 style={{ margin: 0, color: '#1a1a1a', fontSize: '18px' }}>Gerenciar Insumo</h3>
-                            <button onClick={handleCloseModal} style={modalStyles.closeBtn}>✕</button>
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalCard}>
+                        <div className={styles.modalHeader}>
+                            <h3 className={styles.modalTitle}>Gerenciar Insumo</h3>
+                            <button onClick={handleCloseModal} className={styles.closeBtn}>✕</button>
                         </div>
 
-                        <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Nome do Suprimento:</label>
+                        <form onSubmit={handleSaveEdit} className={styles.modalForm}>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Nome do Suprimento:</label>
                                 <input
                                     type="text"
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
                                     required
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Tipo de Material:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Tipo de Material:</label>
                                 <select
                                     value={editMaterial}
                                     onChange={(e) => setEditMaterial(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 >
                                     <option value="PLA">PLA</option>
                                     <option value="ABS">ABS</option>
@@ -409,33 +414,33 @@ export function SupplyRegister() {
                                 </select>
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Cor / Acabamento:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Cor / Acabamento:</label>
                                 <input
                                     type="text"
                                     value={editColor}
                                     onChange={(e) => setEditColor(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Estoque Atual (Gramas/g):</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Estoque Atual (Gramas/g):</label>
                                 <input
                                     type="number"
                                     value={editCurrentStockGrams}
                                     onChange={(e) => setEditCurrentStockGrams(e.target.value)}
                                     required
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Situação do Estoque:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Situação do Estoque:</label>
                                 <select
                                     value={editStatus}
                                     onChange={(e) => setEditStatus(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 >
                                     <option value="Em Estoque">Em Estoque</option>
                                     <option value="Baixo Estoque">Baixo Estoque</option>
@@ -443,27 +448,27 @@ export function SupplyRegister() {
                                 </select>
                             </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '12px' }}>
-                                <button 
-                                    type="button" 
-                                    onClick={handleDeleteSupply} 
+                            <div className={styles.modalFooter}>
+                                <button
+                                    type="button"
+                                    onClick={handleDeleteSupply}
                                     disabled={actionLoading}
-                                    style={modalStyles.deleteBtn}
+                                    className={styles.deleteBtn}
                                 >
-                                    🗑️ Deletar
+                                    Deletar
                                 </button>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button 
-                                        type="button" 
-                                        onClick={handleCloseModal} 
-                                        style={modalStyles.cancelBtn}
+                                <div className={styles.modalFooterActions}>
+                                    <button
+                                        type="button"
+                                        onClick={handleCloseModal}
+                                        className={styles.cancelBtn}
                                     >
                                         Cancelar
                                     </button>
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         disabled={actionLoading}
-                                        style={styles.submitButton}
+                                        className={styles.submitButton}
                                     >
                                         {actionLoading ? 'Salvando...' : 'Salvar Alterações'}
                                     </button>
@@ -476,55 +481,3 @@ export function SupplyRegister() {
         </div>
     );
 }
-
-// Estilos específicos da caixa de diálogo (modal)
-const modalStyles = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 2000,
-        padding: '20px',
-    },
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: '12px',
-        width: '100%',
-        maxWidth: '450px',
-        padding: '24px',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-        fontFamily: 'sans-serif',
-    },
-    closeBtn: {
-        background: 'none',
-        border: 'none',
-        fontSize: '16px',
-        cursor: 'pointer',
-        color: '#64748b',
-    },
-    deleteBtn: {
-        backgroundColor: '#fee2e2',
-        color: '#991b1b',
-        border: '1px solid #fca5a5',
-        padding: '8px 12px',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '13px',
-        fontWeight: '500',
-    },
-    cancelBtn: {
-        backgroundColor: '#f1f5f9',
-        color: '#334155',
-        border: '1px solid #cbd5e1',
-        padding: '8px 14px',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '13px',
-    }
-};

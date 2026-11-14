@@ -1,0 +1,327 @@
+/* layout geral */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.miniCategory {
+  font-size: 11px;
+  font-weight: bold;
+  color: #8b0000;
+  letter-spacing: 1px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1a1a1a;
+  margin: 4px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.newButton {
+  background-color: #8b0000;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(139, 0, 0, 0.2);
+}
+
+/* tabela e filtros */
+.tableCard {
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  padding: 20px;
+}
+
+.filterBar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  flex: 2;
+  min-width: 220px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.selectFilter {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.thRow {
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.th {
+  padding: 12px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+.tr {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.td {
+  padding: 14px 10px;
+  font-size: 14px;
+  color: #334155;
+}
+
+/* modificadores de cédula */
+.tdCode {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.tdName {
+  font-weight: 500;
+}
+
+.loadingBox {
+  padding: 30px;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.emptyCell {
+  padding: 20px;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+/* badges de situação */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badgeActive {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.badgeInfo {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.badgeWarning {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+/* botões de ação */
+.actionBtn {
+  background-color: transparent;
+  border: 1px solid #cbd5e1;
+  color: #8b0000;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* formulário */
+.card {
+  max-width: 450px;
+  margin: 20px auto;
+  padding: 24px;
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: sans-serif;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 13px;
+  color: #334155;
+}
+
+.input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.submitButton {
+  padding: 12px;
+  background-color: #8b0000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modalCard {
+  background-color: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  font-family: sans-serif;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 10px;
+}
+
+.modalTitle {
+  margin: 0;
+  color: #1a1a1a;
+  font-size: 18px;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+}
+
+.modalFooterActions {
+  display: flex;
+  gap: 8px;
+}
+
+.deleteBtn {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.cancelBtn {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}

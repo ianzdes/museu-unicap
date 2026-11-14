@@ -2,23 +2,24 @@ import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { Login } from './pages/Login';
 import { Navbar } from './components/Navbar';
-import { UserRegister } from './pages/management/UserRegister';
-import { FilamentReport } from './pages/reports/FilamentReportPage';
-import { MachineUsage } from './pages/reports/MachineUsage';
-import { LoanHistory } from './pages/reports/LoanHistory';
-import { MaintenanceHistory } from './pages/reports/MaintenanceHistory';
-import { SupplyRegister } from './pages/patrimony/SupplyRegister';
-import { MachineRegister } from './pages/patrimony/MachineRegister';
-import { LoanRegister } from './pages/patrimony/LoanRegister';
-import { ClientRegister } from './pages/management/ClientRegister';
-import { UserSettings } from './pages/UserSettings';
+import { UserRegister } from './pages/management/users/UserRegister';
+import { FilamentReport } from './pages/reports/filament/FilamentReport';
+import { MachineUsage } from './pages/reports/usage/MachineUsage';
+import { LoanHistory } from './pages/reports/loan/LoanHistory';
+import { MaintenanceHistory } from './pages/reports/maintenance/MaintenanceHistory';
+import { SupplyRegister } from './pages/patrimony/supply/SupplyRegister';
+import { MachineRegister } from './pages/patrimony/machines/MachineRegister';
+import { LoanRegister } from './pages/patrimony/loan/LoanRegister';
+import { ClientRegister } from './pages/management/clients/ClientRegister';
+import { UserSettings } from './pages/user/UserSettings';
+import { ProductionReport } from './pages/reports/production/ProductionReport';
 import { HomePage } from './pages/homepage/HomePage';
 import { Footer } from './components/Footer';
 
 function App() {
   const [session, setSession] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
-  const [currentRoute, setCurrentRoute] = useState('users');
+  const [currentRoute, setCurrentRoute] = useState('homepage');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -81,6 +82,9 @@ function App() {
         case 'maintenance-history':
           return <MaintenanceHistory />;
 
+        case 'production-report':
+          return <ProductionReport />;
+
         default: 
           return <div>Relatório não encontrado.</div>;
       }
@@ -97,7 +101,7 @@ function App() {
         return <UserSettings />;
 
       case 'homepage':
-        return <HomePage />;
+        return <HomePage onNavigate={setCurrentRoute}/>;
 
       default:
         return <div>Página não encontrada</div>;

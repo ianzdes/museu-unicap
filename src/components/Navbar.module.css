@@ -1,0 +1,144 @@
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #690013;
+    color: #fff;
+    padding: 15px 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-family: sans-serif;
+}
+
+.logoContainer {
+    cursor: pointer;
+}
+
+.logo {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.links {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.navButton {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.navButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.userNavButton {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.userNavButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.dropdownContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #690013;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+    z-index: 100;
+    padding: 6px 0;
+}
+
+.dropdownItem {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    text-align: left;
+    padding: 10px 16px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: normal;
+}
+
+.dropdownItem:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logoutItem {
+    color: #ffb3b3;
+}
+
+@media (max-width: 900px) {
+    .nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+
+    .links {
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .links {
+        gap: 5px;
+    }
+
+    .navButton,
+    .userNavButton {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .dropdownMenu {
+        left: 0;
+        right: auto;
+        min-width: 180px;
+    }
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

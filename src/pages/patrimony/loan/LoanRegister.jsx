@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient';
-import { styles } from '../../styles/reportStyles';
+import { supabase } from '../../../supabaseClient';
+import styles from './LoanRegister.module.css';
+
+const STATUS_BADGE_CLASS = {
+    Ativo: styles.badgeInfo,
+    Devolvido: styles.badgeActive,
+    Atrasado: styles.badgeInactive,
+};
 
 export function LoanRegister() {
-    const [view, setView] = useState('list'); 
-    
+    const [view, setView] = useState('list');
+
     const [loans, setLoans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -95,7 +101,7 @@ export function LoanRegister() {
 
         const { error } = await supabase
             .from('loans')
-            .update({ 
+            .update({
                 status: 'Devolvido',
                 return_date: new Date().toISOString().split('T')[0]
             })
@@ -174,7 +180,7 @@ export function LoanRegister() {
     };
 
     const filteredLoans = loans.filter((item) => {
-        const matchesSearch = item.equipment_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        const matchesSearch = item.equipment_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               item.client_name?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
 
@@ -183,73 +189,73 @@ export function LoanRegister() {
 
     if (view === 'form') {
         return (
-            <div style={styles.card}>
-                <div style={styles.formHeader}>
+            <div className={styles.card}>
+                <div className={styles.formHeader}>
                     <h2>Novo Empréstimo</h2>
-                    <button onClick={() => setView('list')} style={styles.backButton}>
+                    <button onClick={() => setView('list')} className={styles.backButton}>
                         ← Voltar para a lista
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} style={styles.form}>
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Equipamento / Patrimônio:</label>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Equipamento / Patrimônio:</label>
                         <input
                             type="text"
                             value={equipmentName}
                             onChange={(e) => setEquipmentName(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: Tablet Samsung (PAT-101) ou Mesa Digitalizadora"
-                        /> 
+                        />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Cliente / Solicitante:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Cliente / Solicitante:</label>
                         <input
                             type="text"
                             value={clientName}
                             onChange={(e) => setClientName(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: João Silva (Aluno)"
                         />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Data de Empréstimo:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Data de Empréstimo:</label>
                         <input
                             type="date"
                             value={loanDate}
                             onChange={(e) => setLoanDate(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                         />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Data Prevista de Devolução:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Data Prevista de Devolução:</label>
                         <input
                             type="date"
                             value={dueDate}
                             onChange={(e) => setDueDate(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                         />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Observações / Finalidade (Opcional):</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Observações / Finalidade (Opcional):</label>
                         <input
                             type="text"
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: Uso na oficina de modelagem"
                         />
                     </div>
 
-                    <button type="submit" disabled={submitting} style={styles.submitButton}>
+                    <button type="submit" disabled={submitting} className={styles.submitButton}>
                         {submitting ? 'Salvando...' : 'Registrar Empréstimo'}
                     </button>
                 </form>
@@ -258,31 +264,31 @@ export function LoanRegister() {
     }
 
     return (
-        <div style={styles.container}>
-            <div style={styles.headerRow}>
+        <div className={styles.container}>
+            <div className={styles.headerRow}>
                 <div>
-                    <span style={styles.miniCategory}>CIRCULAÇÃO & EMPRÉSTIMOS</span>
-                    <h2 style={styles.title}>Empréstimos de Equipamentos</h2>
-                    <p style={styles.subtitle}>Acompanhe o status, prazo de devolução e disponibilidade de equipamentos emprestados.</p>
+                    <span className={styles.miniCategory}>CIRCULAÇÃO & EMPRÉSTIMOS</span>
+                    <h2 className={styles.title}>Empréstimos de Equipamentos</h2>
+                    <p className={styles.subtitle}>Acompanhe o status, prazo de devolução e disponibilidade de equipamentos emprestados.</p>
                 </div>
-                <button onClick={() => setView('form')} style={styles.newButton}>
+                <button onClick={() => setView('form')} className={styles.newButton}>
                     + Novo empréstimo
                 </button>
             </div>
 
-            <div style={styles.tableCard}>
-                <div style={styles.filterBar}>
+            <div className={styles.tableCard}>
+                <div className={styles.filterBar}>
                     <input
                         type="text"
                         placeholder="Pesquisar por equipamento ou cliente..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        style={styles.searchInput}
+                        className={styles.searchInput}
                     />
-                    <select 
-                        value={statusFilter} 
+                    <select
+                        value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        style={styles.selectFilter}
+                        className={styles.selectFilter}
                     >
                         <option value="all">Status: todos</option>
                         <option value="Ativo">Empréstimo Ativo</option>
@@ -292,65 +298,65 @@ export function LoanRegister() {
                 </div>
 
                 {loading ? (
-                    <div style={{ padding: '30px', textAlign: 'center', color: '#7f8c8d' }}>Carregando empréstimos...</div>
+                    <div className={styles.loadingBox}>Carregando empréstimos...</div>
                 ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={styles.table}>
+                    <div className={styles.tableScroll}>
+                        <table className={styles.table}>
                             <thead>
-                                <tr style={styles.thRow}>
-                                    <th style={styles.th}>ID</th>
-                                    <th style={styles.th}>EQUIPAMENTO</th>
-                                    <th style={styles.th}>CLIENTE / LEITOR</th>
-                                    <th style={styles.th}>DATA RETIRADA</th>
-                                    <th style={styles.th}>PREV. DEVOLUÇÃO</th>
-                                    <th style={styles.th}>STATUS</th>
-                                    <th style={styles.th}>AÇÕES</th>
+                                <tr className={styles.thRow}>
+                                    <th className={styles.th}>ID</th>
+                                    <th className={styles.th}>EQUIPAMENTO</th>
+                                    <th className={styles.th}>CLIENTE / LEITOR</th>
+                                    <th className={styles.th}>DATA RETIRADA</th>
+                                    <th className={styles.th}>PREV. DEVOLUÇÃO</th>
+                                    <th className={styles.th}>STATUS</th>
+                                    <th className={styles.th}>AÇÕES</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredLoans.length === 0 ? (
                                     <tr>
-                                        <td colSpan="7" style={{ padding: '20px', textAlign: 'center', color: '#7f8c8d' }}>
+                                        <td colSpan="7" className={styles.emptyCell}>
                                             Nenhum empréstimo encontrado.
                                         </td>
                                     </tr>
                                 ) : (
                                     filteredLoans.map((item, index) => {
-                                        let badgeStyle = styles.badgeAtivo;
-                                        if (item.status === 'Devolvido') badgeStyle = styles.badgeDevolvido;
-                                        if (item.status === 'Atrasado') badgeStyle = styles.badgeAtrasado;
+                                        const badgeClass = STATUS_BADGE_CLASS[item.status] || styles.badgeInfo;
 
                                         return (
-                                            <tr key={item.id || index} style={styles.tr}>
-                                                <td style={styles.td}>#{String(index + 1).padStart(3, '0')}</td>
-                                                <td style={{...styles.td, fontWeight: '500'}}>{item.equipment_name}</td>
-                                                <td style={styles.td}>{item.client_name}</td>
-                                                <td style={styles.td}>
+                                            <tr key={item.id || index} className={styles.tr}>
+                                                <td className={styles.td}>#{String(index + 1).padStart(3, '0')}</td>
+                                                <td className={`${styles.td} ${styles.tdEquipment}`}>{item.equipment_name}</td>
+                                                <td className={styles.td}>{item.client_name}</td>
+                                                <td className={styles.td}>
                                                     {item.loan_date ? new Date(item.loan_date).toLocaleDateString('pt-BR') : '—'}
                                                 </td>
-                                                <td style={styles.td}>
+                                                <td className={styles.td}>
                                                     {item.due_date ? new Date(item.due_date).toLocaleDateString('pt-BR') : '—'}
                                                 </td>
-                                                <td style={styles.td}>
-                                                    <span style={badgeStyle}>
+                                                <td className={styles.td}>
+                                                    <span className={`${styles.badge} ${badgeClass}`}>
                                                         ● {item.status || 'Ativo'}
                                                     </span>
                                                 </td>
-                                                <td style={{...styles.td, display: 'flex', gap: '8px', alignItems: 'center'}}>
-                                                    {item.status !== 'Devolvido' && (
-                                                        <button 
-                                                            onClick={() => handleReturn(item.id)}
-                                                            style={styles.returnBtn}
+                                                <td className={styles.td}>
+                                                    <div className={styles.actions}>
+                                                        {item.status !== 'Devolvido' && (
+                                                            <button
+                                                                onClick={() => handleReturn(item.id)}
+                                                                className={styles.successBtn}
+                                                            >
+                                                                Dar baixa
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            onClick={() => handleOpenModal(item)}
+                                                            className={styles.actionBtn}
                                                         >
-                                                            Dar baixa
+                                                            Gerenciar
                                                         </button>
-                                                    )}
-                                                    <button 
-                                                        onClick={() => handleOpenModal(item)}
-                                                        style={styles.actionBtn}
-                                                    >
-                                                        Gerenciar
-                                                    </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         );
@@ -364,52 +370,52 @@ export function LoanRegister() {
 
             {/* caixa de diálogo / modal */}
             {isModalOpen && (
-                <div style={modalStyles.overlay}>
-                    <div style={modalStyles.card}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-                            <h3 style={{ margin: 0, color: '#1a1a1a', fontSize: '18px' }}>Gerenciar Empréstimo</h3>
-                            <button onClick={handleCloseModal} style={modalStyles.closeBtn}>✕</button>
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalCard}>
+                        <div className={styles.modalHeader}>
+                            <h3 className={styles.modalTitle}>Gerenciar Empréstimo</h3>
+                            <button onClick={handleCloseModal} className={styles.closeBtn}>✕</button>
                         </div>
 
-                        <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Equipamento / Patrimônio:</label>
+                        <form onSubmit={handleSaveEdit} className={styles.modalForm}>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Equipamento / Patrimônio:</label>
                                 <input
                                     type="text"
                                     value={editEquipmentName}
                                     onChange={(e) => setEditEquipmentName(e.target.value)}
                                     required
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Cliente / Solicitante:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Cliente / Solicitante:</label>
                                 <input
                                     type="text"
                                     value={editClientName}
                                     onChange={(e) => setEditClientName(e.target.value)}
                                     required
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Data Prevista de Devolução:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Data Prevista de Devolução:</label>
                                 <input
                                     type="date"
                                     value={editDueDate}
                                     onChange={(e) => setEditDueDate(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Status:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Status:</label>
                                 <select
                                     value={editStatus}
                                     onChange={(e) => setEditStatus(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 >
                                     <option value="Ativo">Ativo</option>
                                     <option value="Devolvido">Devolvido</option>
@@ -417,37 +423,37 @@ export function LoanRegister() {
                                 </select>
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Observações:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Observações:</label>
                                 <input
                                     type="text"
                                     value={editNotes}
                                     onChange={(e) => setEditNotes(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '12px' }}>
-                                <button 
-                                    type="button" 
-                                    onClick={handleDeleteLoan} 
+                            <div className={styles.modalFooter}>
+                                <button
+                                    type="button"
+                                    onClick={handleDeleteLoan}
                                     disabled={actionLoading}
-                                    style={modalStyles.deleteBtn}
+                                    className={styles.deleteBtn}
                                 >
                                     Deletar
                                 </button>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button 
-                                        type="button" 
-                                        onClick={handleCloseModal} 
-                                        style={modalStyles.cancelBtn}
+                                <div className={styles.modalFooterActions}>
+                                    <button
+                                        type="button"
+                                        onClick={handleCloseModal}
+                                        className={styles.cancelBtn}
                                     >
                                         Cancelar
                                     </button>
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         disabled={actionLoading}
-                                        style={styles.submitButton}
+                                        className={styles.submitButton}
                                     >
                                         {actionLoading ? 'Salvando...' : 'Salvar Alterações'}
                                     </button>
@@ -460,55 +466,3 @@ export function LoanRegister() {
         </div>
     );
 }
-
-// Estilos específicos da caixa de diálogo (modal)
-const modalStyles = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 2000,
-        padding: '20px',
-    },
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: '12px',
-        width: '100%',
-        maxWidth: '450px',
-        padding: '24px',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-        fontFamily: 'sans-serif',
-    },
-    closeBtn: {
-        background: 'none',
-        border: 'none',
-        fontSize: '16px',
-        cursor: 'pointer',
-        color: '#64748b',
-    },
-    deleteBtn: {
-        backgroundColor: '#fee2e2',
-        color: '#991b1b',
-        border: '1px solid #fca5a5',
-        padding: '8px 12px',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '13px',
-        fontWeight: '500',
-    },
-    cancelBtn: {
-        backgroundColor: '#f1f5f9',
-        color: '#334155',
-        border: '1px solid #cbd5e1',
-        padding: '8px 14px',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '13px',
-    }
-};

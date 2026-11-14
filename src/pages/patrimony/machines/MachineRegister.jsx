@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../supabaseClient';
-import { styles } from '../../styles/reportStyles';
+import { supabase } from '../../../supabaseClient';
+import styles from './MachineRegister.module.css';
+
+const STATUS_BADGE_CLASS = {
+    'Disponível': styles.badgeActive,
+    'Emprestado': styles.badgeInfo,
+    'Manutenção': styles.badgeWarning,
+};
 
 export function MachineRegister() {
-    const [view, setView] = useState('list'); 
-    
+    const [view, setView] = useState('list');
+
     const [equipments, setEquipments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -18,7 +24,7 @@ export function MachineRegister() {
     const [condition, setCondition] = useState('Boa');
     const [status, setStatus] = useState('Disponível');
     const [lastMaintenance, setLastMaintenance] = useState('');
-    const [supplyLevel, setSupplyLevel] = useState('100%');
+    const [supplyLevel, setSupplyLevel] = useState(100);
     const [submitting, setSubmitting] = useState(false);
 
     // estados para controlar o modal de detalhes
@@ -57,6 +63,11 @@ export function MachineRegister() {
             return;
         }
 
+        if (supplyLevel < 0 || supplyLevel > 100) {
+            alert("O valor tem que estar entre 0 e 100");
+            return;
+        }
+
         setSubmitting(true);
 
         const { error } = await supabase
@@ -85,7 +96,7 @@ export function MachineRegister() {
             setCondition('Boa');
             setStatus('Disponível');
             setLastMaintenance('');
-            setSupplyLevel('100%');
+            setSupplyLevel(100);
             setView('list');
             fetchEquipments();
         }
@@ -154,7 +165,7 @@ export function MachineRegister() {
     };
 
     const filteredEquipments = equipments.filter((eq) => {
-        const matchesSearch = eq.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        const matchesSearch = eq.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               eq.asset_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               eq.category?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = categoryFilter === 'all' || eq.category === categoryFilter;
@@ -166,44 +177,44 @@ export function MachineRegister() {
 
     if (view === 'form') {
         return (
-            <div style={styles.card}>
-                <div style={styles.formHeader}>
+            <div className={styles.card}>
+                <div className={styles.formHeader}>
                     <h2>Novo Equipamento</h2>
-                    <button onClick={() => setView('list')} style={styles.backButton}>
+                    <button onClick={() => setView('list')} className={styles.backButton}>
                         ← Voltar para a lista
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} style={styles.form}>
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Código de Patrimônio:</label>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Código de Patrimônio:</label>
                         <input
                             type="text"
                             value={assetCode}
                             onChange={(e) => setAssetCode(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: PAT-105"
-                        /> 
+                        />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Nome do Equipamento:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Nome do Equipamento:</label>
                         <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
-                            style={styles.input}
+                            className={styles.input}
                             placeholder="Ex: Impressora 3D Ender 3"
                         />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Categoria:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Categoria:</label>
                         <select
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                         >
                             <option value="Eletrônico">Eletrônico</option>
                             <option value="Digitalização">Scanner</option>
@@ -212,12 +223,12 @@ export function MachineRegister() {
                         </select>
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Condição:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Condição:</label>
                         <select
                             value={condition}
                             onChange={(e) => setCondition(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                         >
                             <option value="Excelente">Excelente</option>
                             <option value="Boa">Boa</option>
@@ -226,12 +237,12 @@ export function MachineRegister() {
                         </select>
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Situação Inicial:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Situação Inicial:</label>
                         <select
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                         >
                             <option value="Disponível">Disponível</option>
                             <option value="Emprestado">Emprestado</option>
@@ -239,28 +250,28 @@ export function MachineRegister() {
                         </select>
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Última Manutenção:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Última Manutenção:</label>
                         <input
                             type="date"
                             value={lastMaintenance}
                             onChange={(e) => setLastMaintenance(e.target.value)}
-                            style={styles.input}
+                            className={styles.input}
                         />
                     </div>
 
-                    <div style={styles.fieldGroup}>
-                        <label style={styles.label}>Nível de Insumo / Filamento:</label>
+                    <div className={styles.fieldGroup}>
+                        <label className={styles.label}>Nível de Insumo / Filamento (em porcentagem):</label>
                         <input
                             type="text"
                             value={supplyLevel}
                             onChange={(e) => setSupplyLevel(e.target.value)}
                             placeholder="Ex: 80% ou 500g"
-                            style={styles.input}
+                            className={styles.input}
                         />
                     </div>
 
-                    <button type="submit" disabled={submitting} style={styles.submitButton}>
+                    <button type="submit" disabled={submitting} className={styles.submitButton}>
                         {submitting ? 'Salvando...' : 'Salvar Equipamento'}
                     </button>
                 </form>
@@ -269,31 +280,31 @@ export function MachineRegister() {
     }
 
     return (
-        <div style={styles.container}>
-            <div style={styles.headerRow}>
+        <div className={styles.container}>
+            <div className={styles.headerRow}>
                 <div>
-                    <span style={styles.miniCategory}>PATRIMÔNIO</span>
-                    <h2 style={styles.title}>Equipamentos</h2>
-                    <p style={styles.subtitle}>Consulte disponibilidade, condição e situação dos equipamentos.</p>
+                    <span className={styles.miniCategory}>PATRIMÔNIO</span>
+                    <h2 className={styles.title}>Máquinas</h2>
+                    <p className={styles.subtitle}>Consulte disponibilidade, condição e situação dos equipamentos.</p>
                 </div>
-                <button onClick={() => setView('form')} style={styles.newButton}>
+                <button onClick={() => setView('form')} className={styles.newButton}>
                     + Novo equipamento
                 </button>
             </div>
 
-            <div style={styles.tableCard}>
-                <div style={styles.filterBar}>
+            <div className={styles.tableCard}>
+                <div className={styles.filterBar}>
                     <input
                         type="text"
                         placeholder="Pesquisar por nome, código ou patrimônio..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        style={styles.searchInput}
+                        className={styles.searchInput}
                     />
-                    <select 
-                        value={categoryFilter} 
+                    <select
+                        value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        style={styles.selectFilter}
+                        className={styles.selectFilter}
                     >
                         <option value="all">Categoria: todos</option>
                         <option value="Eletrônico">Eletrônico</option>
@@ -301,20 +312,20 @@ export function MachineRegister() {
                         <option value="Audiovisual">Audiovisual</option>
                         <option value="Impressão 3D">Impressão 3D</option>
                     </select>
-                    <select 
-                        value={statusFilter} 
+                    <select
+                        value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        style={styles.selectFilter}
+                        className={styles.selectFilter}
                     >
                         <option value="all">Situação: todos</option>
                         <option value="Disponível">Disponível</option>
                         <option value="Emprestado">Emprestado</option>
                         <option value="Manutenção">Manutenção</option>
                     </select>
-                    <select 
-                        value={conditionFilter} 
+                    <select
+                        value={conditionFilter}
                         onChange={(e) => setConditionFilter(e.target.value)}
-                        style={styles.selectFilter}
+                        className={styles.selectFilter}
                     >
                         <option value="all">Condição: todos</option>
                         <option value="Boa">Boa</option>
@@ -324,54 +335,54 @@ export function MachineRegister() {
                 </div>
 
                 {loading ? (
-                    <div style={{ padding: '30px', textAlign: 'center', color: '#7f8c8d' }}>Carregando equipamentos...</div>
+                    <div className={styles.loadingBox}>Carregando equipamentos...</div>
                 ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={styles.table}>
+                    <div className={styles.tableScroll}>
+                        <table className={styles.table}>
                             <thead>
-                                <tr style={styles.thRow}>
-                                    <th style={styles.th}>PATRIMÔNIO</th>
-                                    <th style={styles.th}>EQUIPAMENTO</th>
-                                    <th style={styles.th}>CATEGORIA</th>
-                                    <th style={styles.th}>CONDIÇÃO</th>
-                                    <th style={styles.th}>SITUAÇÃO</th>
-                                    <th style={styles.th}>ÚLTIMA MANUTENÇÃO</th>
-                                    <th style={styles.th}>INSUMO</th>
-                                    <th style={styles.th}>AÇÕES</th>
+                                <tr className={styles.thRow}>
+                                    <th className={styles.th}>PATRIMÔNIO</th>
+                                    <th className={styles.th}>EQUIPAMENTO</th>
+                                    <th className={styles.th}>CATEGORIA</th>
+                                    <th className={styles.th}>CONDIÇÃO</th>
+                                    <th className={styles.th}>SITUAÇÃO</th>
+                                    <th className={styles.th}>ÚLTIMA MANUTENÇÃO</th>
+                                    <th className={styles.th}>INSUMO</th>
+                                    <th className={styles.th}>AÇÕES</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredEquipments.length === 0 ? (
                                     <tr>
-                                        <td colSpan="8" style={{ padding: '20px', textAlign: 'center', color: '#7f8c8d' }}>
+                                        <td colSpan="8" className={styles.emptyCell}>
                                             Nenhum equipamento encontrado.
                                         </td>
                                     </tr>
                                 ) : (
                                     filteredEquipments.map((item, index) => {
-                                        let badgeStyle = styles.badgeDisponivel;
-                                        if (item.status === 'Emprestado') badgeStyle = styles.badgeEmprestado;
-                                        if (item.status === 'Manutenção') badgeStyle = styles.badgeManutencao;
+                                        const badgeClass = STATUS_BADGE_CLASS[item.status] || styles.badgeActive;
 
                                         return (
-                                            <tr key={item.id || index} style={styles.tr}>
-                                                <td style={{...styles.td, color: '#64748b', fontSize: '13px'}}>{item.asset_code || `PAT-${101 + index}`}</td>
-                                                <td style={{...styles.td, fontWeight: '500'}}>{item.name}</td>
-                                                <td style={styles.td}>{item.category}</td>
-                                                <td style={styles.td}>{item.condition || 'Boa'}</td>
-                                                <td style={styles.td}>
-                                                    <span style={badgeStyle}>
+                                            <tr key={item.id || index} className={styles.tr}>
+                                                <td className={`${styles.td} ${styles.tdCode}`}>
+                                                    {item.asset_code || `PAT-${101 + index}`}
+                                                </td>
+                                                <td className={`${styles.td} ${styles.tdName}`}>{item.name}</td>
+                                                <td className={styles.td}>{item.category}</td>
+                                                <td className={styles.td}>{item.condition || 'Boa'}</td>
+                                                <td className={styles.td}>
+                                                    <span className={`${styles.badge} ${badgeClass}`}>
                                                         ● {item.status || 'Disponível'}
                                                     </span>
                                                 </td>
-                                                <td style={styles.td}>
+                                                <td className={styles.td}>
                                                     {item.last_maintenance ? new Date(item.last_maintenance).toLocaleDateString('pt-BR') : '—'}
                                                 </td>
-                                                <td style={styles.td}>{item.supply_level || '100%'}</td>
-                                                <td style={styles.td}>
-                                                    <button 
+                                                <td className={styles.td}>{item.supply_level || '100%'}</td>
+                                                <td className={styles.td}>
+                                                    <button
                                                         onClick={() => handleOpenModal(item)}
-                                                        style={styles.actionBtn}
+                                                        className={styles.actionBtn}
                                                     >
                                                         Gerenciar
                                                     </button>
@@ -388,31 +399,31 @@ export function MachineRegister() {
 
             {/* caixa de diálogo / modal */}
             {isModalOpen && (
-                <div style={modalStyles.overlay}>
-                    <div style={modalStyles.card}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-                            <h3 style={{ margin: 0, color: '#1a1a1a', fontSize: '18px' }}>Gerenciar Equipamento</h3>
-                            <button onClick={handleCloseModal} style={modalStyles.closeBtn}>✕</button>
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalCard}>
+                        <div className={styles.modalHeader}>
+                            <h3 className={styles.modalTitle}>Gerenciar Equipamento</h3>
+                            <button onClick={handleCloseModal} className={styles.closeBtn}>✕</button>
                         </div>
 
-                        <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Nome do Equipamento:</label>
+                        <form onSubmit={handleSaveEdit} className={styles.modalForm}>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Nome do Equipamento:</label>
                                 <input
                                     type="text"
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
                                     required
-                                    style={styles.input}
+                                    className={styles.input}
                                 />
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Categoria:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Categoria:</label>
                                 <select
                                     value={editCategory}
                                     onChange={(e) => setEditCategory(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 >
                                     <option value="Eletrônico">Eletrônico</option>
                                     <option value="Digitalização">Scanner</option>
@@ -421,12 +432,12 @@ export function MachineRegister() {
                                 </select>
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Condição:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Condição:</label>
                                 <select
                                     value={editCondition}
                                     onChange={(e) => setEditCondition(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 >
                                     <option value="Excelente">Excelente</option>
                                     <option value="Boa">Boa</option>
@@ -435,12 +446,12 @@ export function MachineRegister() {
                                 </select>
                             </div>
 
-                            <div style={styles.fieldGroup}>
-                                <label style={styles.label}>Situação:</label>
+                            <div className={styles.fieldGroup}>
+                                <label className={styles.label}>Situação:</label>
                                 <select
                                     value={editStatus}
                                     onChange={(e) => setEditStatus(e.target.value)}
-                                    style={styles.input}
+                                    className={styles.input}
                                 >
                                     <option value="Disponível">Disponível</option>
                                     <option value="Emprestado">Emprestado</option>
@@ -448,27 +459,27 @@ export function MachineRegister() {
                                 </select>
                             </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', borderTop: '1px solid #e2e8f0', paddingTop: '12px' }}>
-                                <button 
-                                    type="button" 
-                                    onClick={handleDeleteEquipment} 
+                            <div className={styles.modalFooter}>
+                                <button
+                                    type="button"
+                                    onClick={handleDeleteEquipment}
                                     disabled={actionLoading}
-                                    style={modalStyles.deleteBtn}
+                                    className={styles.deleteBtn}
                                 >
                                     Deletar
                                 </button>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button 
-                                        type="button" 
-                                        onClick={handleCloseModal} 
-                                        style={modalStyles.cancelBtn}
+                                <div className={styles.modalFooterActions}>
+                                    <button
+                                        type="button"
+                                        onClick={handleCloseModal}
+                                        className={styles.cancelBtn}
                                     >
                                         Cancelar
                                     </button>
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         disabled={actionLoading}
-                                        style={styles.submitButton}
+                                        className={styles.submitButton}
                                     >
                                         {actionLoading ? 'Salvando...' : 'Salvar Alterações'}
                                     </button>
@@ -481,54 +492,3 @@ export function MachineRegister() {
         </div>
     );
 }
-
-const modalStyles = {
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 2000,
-        padding: '20px',
-    },
-    card: {
-        backgroundColor: '#fff',
-        borderRadius: '12px',
-        width: '100%',
-        maxWidth: '450px',
-        padding: '24px',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-        fontFamily: 'sans-serif',
-    },
-    closeBtn: {
-        background: 'none',
-        border: 'none',
-        fontSize: '16px',
-        cursor: 'pointer',
-        color: '#64748b',
-    },
-    deleteBtn: {
-        backgroundColor: '#fee2e2',
-        color: '#991b1b',
-        border: '1px solid #fca5a5',
-        padding: '8px 12px',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '13px',
-        fontWeight: '500',
-    },
-    cancelBtn: {
-        backgroundColor: '#f1f5f9',
-        color: '#334155',
-        border: '1px solid #cbd5e1',
-        padding: '8px 14px',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '13px',
-    }
-};
