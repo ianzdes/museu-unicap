@@ -1,468 +1,244 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { supabase } from '../../../supabaseClient';
+import { LoanForm } from './LoanForm';
+import { STATUSES, displayLoanStatus, formatLoanDate, returnPayload, todayAtMuseum } from './LoanFields';
 import styles from './LoanRegister.module.css';
 
-const STATUS_BADGE_CLASS = {
-    Ativo: styles.badgeInfo,
-    Devolvido: styles.badgeActive,
-    Atrasado: styles.badgeInactive,
+const COLUMNS = ['Nº', 'Equipamento', 'Cliente', 'Retirada', 'Previsão de devolução',
+  'Devolução', 'Status', 'Ações'];
+const BADGES = {
+  Ativo: styles.badgeInfo,
+  Devolvido: styles.badgeActive,
+  Atrasado: styles.badgeInactive,
 };
 
+function matchStatus(request, loan) {
+  return loan.status == null ? request.is('status', null) : request.eq('status', loan.status);
+}
+
+async function loadLoans(signal) {
+  const rows = [];
+  const pageSize = 500;
+  let total = Infinity;
+  while (!signal.aborted && rows.length < total) {
+    const { data, error, count } = await supabase
+      .from('loans')
+      .select('id,equipment_name,client_name,loan_date,due_date,return_date,status,notes',
+        rows.length === 0 ? { count: 'exact' } : undefined)
+      .order('created_at', { ascending: false })
+      .order('id')
+      .range(rows.length, rows.length + pageSize - 1)
+      .abortSignal(signal);
+
+    if (error) throw error;
+    if (!data?.length) break;
+    total = count ?? total;
+    rows.push(...data);
+  }
+  return rows;
+}
+
 export function LoanRegister() {
-    const [view, setView] = useState('list');
+  const [loans, setLoans] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [revision, setRevision] = useState(0);
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState('');
+  const [today, setToday] = useState(todayAtMuseum);
+  const [returning, setReturning] = useState(false);
+  const [actionError, setActionError] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [draft, setDraft] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [notice, setNotice] = useState('');
+  const newButton = useRef(null);
+  const restoreListFocus = useRef(false);
 
-    const [loans, setLoans] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
-
-    const [equipmentName, setEquipmentName] = useState('');
-    const [clientName, setClientName] = useState('');
-    const [loanDate, setLoanDate] = useState(new Date().toISOString().split('T')[0]);
-    const [dueDate, setDueDate] = useState('');
-    const [notes, setNotes] = useState('');
-    const [submitting, setSubmitting] = useState(false);
-
-    // estados para controlar o modal de detalhes
-    const [selectedLoan, setSelectedLoan] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editEquipmentName, setEditEquipmentName] = useState('');
-    const [editClientName, setEditClientName] = useState('');
-    const [editDueDate, setEditDueDate] = useState('');
-    const [editStatus, setEditStatus] = useState('Ativo');
-    const [editNotes, setEditNotes] = useState('');
-    const [actionLoading, setActionLoading] = useState(false);
-
-    useEffect(() => {
-        fetchLoans();
-    }, []);
-
-    const fetchLoans = async () => {
-        setLoading(true);
-        const { data, error } = await supabase
-            .from('loans')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('Erro ao buscar empréstimos:', error.message);
-        } else {
-            setLoans(data || []);
-        }
-        setLoading(false);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (equipmentName.trim().length < 2) {
-            alert("Informe o nome/patrimônio do equipamento.");
-            return;
-        }
-
-        if (clientName.trim().length < 2) {
-            alert("Informe o nome do cliente/solicitante.");
-            return;
-        }
-
-        setSubmitting(true);
-
-        const { error } = await supabase
-            .from('loans')
-            .insert([
-                {
-                    equipment_name: equipmentName,
-                    client_name: clientName,
-                    loan_date: loanDate,
-                    due_date: dueDate || null,
-                    status: 'Ativo',
-                    notes: notes || null
-                }
-            ]);
-
-        setSubmitting(false);
-
-        if (error) {
-            alert(`Erro ao registrar empréstimo: ${error.message}`);
-        } else {
-            alert(`Empréstimo do equipamento "${equipmentName}" para ${clientName} registrado com sucesso!`);
-            setEquipmentName('');
-            setClientName('');
-            setLoanDate(new Date().toISOString().split('T')[0]);
-            setDueDate('');
-            setNotes('');
-            setView('list');
-            fetchLoans();
-        }
-    };
-
-    const handleReturn = async (loanId) => {
-        if (!confirm("Confirmar a devolução deste equipamento?")) return;
-
-        const { error } = await supabase
-            .from('loans')
-            .update({
-                status: 'Devolvido',
-                return_date: new Date().toISOString().split('T')[0]
-            })
-            .eq('id', loanId);
-
-        if (error) {
-            alert(`Erro ao atualizar devolução: ${error.message}`);
-        } else {
-            alert("Devolução realizada com sucesso!");
-            fetchLoans();
-        }
-    };
-
-    // funções do modal
-    const handleOpenModal = (item) => {
-        setSelectedLoan(item);
-        setEditEquipmentName(item.equipment_name || '');
-        setEditClientName(item.client_name || '');
-        setEditDueDate(item.due_date || '');
-        setEditStatus(item.status || 'Ativo');
-        setEditNotes(item.notes || '');
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setSelectedLoan(null);
-    };
-
-    const handleSaveEdit = async (e) => {
-        e.preventDefault();
-        if (!selectedLoan) return;
-
-        setActionLoading(true);
-        const { error } = await supabase
-            .from('loans')
-            .update({
-                equipment_name: editEquipmentName,
-                client_name: editClientName,
-                due_date: editDueDate || null,
-                status: editStatus,
-                notes: editNotes || null
-            })
-            .eq('id', selectedLoan.id);
-
-        setActionLoading(false);
-
-        if (error) {
-            alert(`Erro ao atualizar empréstimo: ${error.message}`);
-        } else {
-            alert('Empréstimo atualizado com sucesso!');
-            handleCloseModal();
-            fetchLoans();
-        }
-    };
-
-    const handleDeleteLoan = async () => {
-        if (!selectedLoan) return;
-        if (!window.confirm("Tem certeza que deseja excluir este registro de empréstimo?")) return;
-
-        setActionLoading(true);
-        const { error } = await supabase
-            .from('loans')
-            .delete()
-            .eq('id', selectedLoan.id);
-
-        setActionLoading(false);
-
-        if (error) {
-            alert(`Erro ao excluir empréstimo: ${error.message}`);
-        } else {
-            alert('Empréstimo excluído com sucesso!');
-            handleCloseModal();
-            fetchLoans();
-        }
-    };
-
-    const filteredLoans = loans.filter((item) => {
-        const matchesSearch = item.equipment_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              item.client_name?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
-
-        return matchesSearch && matchesStatus;
-    });
-
-    if (view === 'form') {
-        return (
-            <div className={styles.card}>
-                <div className={styles.formHeader}>
-                    <h2>Novo Empréstimo</h2>
-                    <button onClick={() => setView('list')} className={styles.backButton}>
-                        ← Voltar para a lista
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.fieldGroup}>
-                        <label className={styles.label}>Equipamento / Patrimônio:</label>
-                        <input
-                            type="text"
-                            value={equipmentName}
-                            onChange={(e) => setEquipmentName(e.target.value)}
-                            required
-                            className={styles.input}
-                            placeholder="Ex: Tablet Samsung (PAT-101) ou Mesa Digitalizadora"
-                        />
-                    </div>
-
-                    <div className={styles.fieldGroup}>
-                        <label className={styles.label}>Cliente / Solicitante:</label>
-                        <input
-                            type="text"
-                            value={clientName}
-                            onChange={(e) => setClientName(e.target.value)}
-                            required
-                            className={styles.input}
-                            placeholder="Ex: João Silva (Aluno)"
-                        />
-                    </div>
-
-                    <div className={styles.fieldGroup}>
-                        <label className={styles.label}>Data de Empréstimo:</label>
-                        <input
-                            type="date"
-                            value={loanDate}
-                            onChange={(e) => setLoanDate(e.target.value)}
-                            required
-                            className={styles.input}
-                        />
-                    </div>
-
-                    <div className={styles.fieldGroup}>
-                        <label className={styles.label}>Data Prevista de Devolução:</label>
-                        <input
-                            type="date"
-                            value={dueDate}
-                            onChange={(e) => setDueDate(e.target.value)}
-                            required
-                            className={styles.input}
-                        />
-                    </div>
-
-                    <div className={styles.fieldGroup}>
-                        <label className={styles.label}>Observações / Finalidade (Opcional):</label>
-                        <input
-                            type="text"
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            className={styles.input}
-                            placeholder="Ex: Uso na oficina de modelagem"
-                        />
-                    </div>
-
-                    <button type="submit" disabled={submitting} className={styles.submitButton}>
-                        {submitting ? 'Salvando...' : 'Registrar Empréstimo'}
-                    </button>
-                </form>
-            </div>
-        );
+  useLayoutEffect(() => {
+    if (!creating && !selected && !returning && restoreListFocus.current) {
+      restoreListFocus.current = false;
+      newButton.current?.focus();
     }
+  }, [creating, selected, returning]);
 
-    return (
-        <div className={styles.container}>
-            <div className={styles.headerRow}>
-                <div>
-                    <span className={styles.miniCategory}>CIRCULAÇÃO & EMPRÉSTIMOS</span>
-                    <h2 className={styles.title}>Empréstimos de Equipamentos</h2>
-                    <p className={styles.subtitle}>Acompanhe o status, prazo de devolução e disponibilidade de equipamentos emprestados.</p>
-                </div>
-                <button onClick={() => setView('form')} className={styles.newButton}>
-                    + Novo empréstimo
-                </button>
-            </div>
-
-            <div className={styles.tableCard}>
-                <div className={styles.filterBar}>
-                    <input
-                        type="text"
-                        placeholder="Pesquisar por equipamento ou cliente..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className={styles.searchInput}
-                    />
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className={styles.selectFilter}
-                    >
-                        <option value="all">Status: todos</option>
-                        <option value="Ativo">Empréstimo Ativo</option>
-                        <option value="Devolvido">Devolvido</option>
-                        <option value="Atrasado">Atrasado</option>
-                    </select>
-                </div>
-
-                {loading ? (
-                    <div className={styles.loadingBox}>Carregando empréstimos...</div>
-                ) : (
-                    <div className={styles.tableScroll}>
-                        <table className={styles.table}>
-                            <thead>
-                                <tr className={styles.thRow}>
-                                    <th className={styles.th}>ID</th>
-                                    <th className={styles.th}>EQUIPAMENTO</th>
-                                    <th className={styles.th}>CLIENTE / LEITOR</th>
-                                    <th className={styles.th}>DATA RETIRADA</th>
-                                    <th className={styles.th}>PREV. DEVOLUÇÃO</th>
-                                    <th className={styles.th}>STATUS</th>
-                                    <th className={styles.th}>AÇÕES</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredLoans.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="7" className={styles.emptyCell}>
-                                            Nenhum empréstimo encontrado.
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    filteredLoans.map((item, index) => {
-                                        const badgeClass = STATUS_BADGE_CLASS[item.status] || styles.badgeInfo;
-
-                                        return (
-                                            <tr key={item.id || index} className={styles.tr}>
-                                                <td className={styles.td}>#{String(index + 1).padStart(3, '0')}</td>
-                                                <td className={`${styles.td} ${styles.tdEquipment}`}>{item.equipment_name}</td>
-                                                <td className={styles.td}>{item.client_name}</td>
-                                                <td className={styles.td}>
-                                                    {item.loan_date ? new Date(item.loan_date).toLocaleDateString('pt-BR') : '—'}
-                                                </td>
-                                                <td className={styles.td}>
-                                                    {item.due_date ? new Date(item.due_date).toLocaleDateString('pt-BR') : '—'}
-                                                </td>
-                                                <td className={styles.td}>
-                                                    <span className={`${styles.badge} ${badgeClass}`}>
-                                                        ● {item.status || 'Ativo'}
-                                                    </span>
-                                                </td>
-                                                <td className={styles.td}>
-                                                    <div className={styles.actions}>
-                                                        {item.status !== 'Devolvido' && (
-                                                            <button
-                                                                onClick={() => handleReturn(item.id)}
-                                                                className={styles.successBtn}
-                                                            >
-                                                                Dar baixa
-                                                            </button>
-                                                        )}
-                                                        <button
-                                                            onClick={() => handleOpenModal(item)}
-                                                            className={styles.actionBtn}
-                                                        >
-                                                            Gerenciar
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-
-            {/* caixa de diálogo / modal */}
-            {isModalOpen && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.modalCard}>
-                        <div className={styles.modalHeader}>
-                            <h3 className={styles.modalTitle}>Gerenciar Empréstimo</h3>
-                            <button onClick={handleCloseModal} className={styles.closeBtn}>✕</button>
-                        </div>
-
-                        <form onSubmit={handleSaveEdit} className={styles.modalForm}>
-                            <div className={styles.fieldGroup}>
-                                <label className={styles.label}>Equipamento / Patrimônio:</label>
-                                <input
-                                    type="text"
-                                    value={editEquipmentName}
-                                    onChange={(e) => setEditEquipmentName(e.target.value)}
-                                    required
-                                    className={styles.input}
-                                />
-                            </div>
-
-                            <div className={styles.fieldGroup}>
-                                <label className={styles.label}>Cliente / Solicitante:</label>
-                                <input
-                                    type="text"
-                                    value={editClientName}
-                                    onChange={(e) => setEditClientName(e.target.value)}
-                                    required
-                                    className={styles.input}
-                                />
-                            </div>
-
-                            <div className={styles.fieldGroup}>
-                                <label className={styles.label}>Data Prevista de Devolução:</label>
-                                <input
-                                    type="date"
-                                    value={editDueDate}
-                                    onChange={(e) => setEditDueDate(e.target.value)}
-                                    className={styles.input}
-                                />
-                            </div>
-
-                            <div className={styles.fieldGroup}>
-                                <label className={styles.label}>Status:</label>
-                                <select
-                                    value={editStatus}
-                                    onChange={(e) => setEditStatus(e.target.value)}
-                                    className={styles.input}
-                                >
-                                    <option value="Ativo">Ativo</option>
-                                    <option value="Devolvido">Devolvido</option>
-                                    <option value="Atrasado">Atrasado</option>
-                                </select>
-                            </div>
-
-                            <div className={styles.fieldGroup}>
-                                <label className={styles.label}>Observações:</label>
-                                <input
-                                    type="text"
-                                    value={editNotes}
-                                    onChange={(e) => setEditNotes(e.target.value)}
-                                    className={styles.input}
-                                />
-                            </div>
-
-                            <div className={styles.modalFooter}>
-                                <button
-                                    type="button"
-                                    onClick={handleDeleteLoan}
-                                    disabled={actionLoading}
-                                    className={styles.deleteBtn}
-                                >
-                                    Deletar
-                                </button>
-                                <div className={styles.modalFooterActions}>
-                                    <button
-                                        type="button"
-                                        onClick={handleCloseModal}
-                                        className={styles.cancelBtn}
-                                    >
-                                        Cancelar
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={actionLoading}
-                                        className={styles.submitButton}
-                                    >
-                                        {actionLoading ? 'Salvando...' : 'Salvar Alterações'}
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-        </div>
+  useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+    loadLoans(signal).then(
+      rows => {
+        if (signal.aborted) return;
+        setLoans(rows);
+        setLoading(false);
+      },
+      () => {
+        if (signal.aborted) return;
+        setLoadError(true);
+        setLoading(false);
+      },
     );
+    return () => controller.abort();
+  }, [revision]);
+
+  useEffect(() => {
+    const update = () => setToday(todayAtMuseum());
+    const timer = window.setInterval(update, 30_000);
+    window.addEventListener('focus', update);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', update);
+    };
+  }, []);
+
+  function refresh() {
+    setLoading(true);
+    setLoadError(false);
+    setRevision(value => value + 1);
+  }
+
+  async function mutate(request, failure, success) {
+    const { error } = await request;
+    if (error) throw new Error(`${failure} ${error.message}`);
+    setActionError('');
+    setNotice(success);
+    refresh();
+  }
+
+  function closeCreation() {
+    restoreListFocus.current = true;
+    setCreating(false);
+  }
+
+  async function registerReturn(loan) {
+    if (returning || !window.confirm('Confirmar a devolução deste equipamento?')) return;
+
+    setReturning(true);
+    setNotice('');
+    setActionError('');
+    try {
+      const request = supabase.from('loans').update(returnPayload(loan)).eq('id', loan.id);
+      await mutate(matchStatus(request, loan).select('id').single(),
+        'Erro ao registrar devolução.', 'Devolução registrada com sucesso.');
+      restoreListFocus.current = true;
+    } catch (error) {
+      setActionError(error.message || 'Não foi possível registrar a devolução.');
+    } finally {
+      setReturning(false);
+    }
+  }
+
+  if (creating) {
+    return (
+      <LoanForm draft={draft} onDraft={setDraft} onClose={closeCreation}
+        onSave={async payload => {
+          await mutate(supabase.from('loans').insert([payload]),
+            'Erro ao registrar empréstimo.', 'Empréstimo cadastrado com sucesso.');
+          setDraft(null);
+          closeCreation();
+        }} />
+    );
+  }
+
+  const query = search.trim().toLowerCase();
+  const rows = loans.map(loan => ({ loan, status: displayLoanStatus(loan, today) }))
+    .filter(({ loan, status }) =>
+      (!filter || status === filter) &&
+      (!query || [loan.equipment_name, loan.client_name]
+        .some(value => value?.toLowerCase().includes(query))),
+    );
+
+  return (
+    <section className={styles.container}>
+      <header className={styles.headerRow}>
+        <div>
+          <span className={styles.miniCategory}>CIRCULAÇÃO &amp; EMPRÉSTIMOS</span>
+          <h2 className={styles.title}>Empréstimos de equipamentos</h2>
+          <p className={styles.subtitle}>Acompanhe retiradas, prazos e devoluções.</p>
+        </div>
+        <button ref={newButton} type="button" className={styles.primaryButton} disabled={returning} onClick={() => {
+          setNotice('');
+          setActionError('');
+          setCreating(true);
+        }}>+ Novo empréstimo</button>
+      </header>
+
+      <p className={notice ? styles.notice : styles.srOnly} role="status">{notice}</p>
+      {returning && <p role="status">Registrando devolução…</p>}
+      {actionError && <p className={styles.error} role="alert">{actionError}</p>}
+      <div className={styles.tableCard}>
+        <div className={styles.filterBar}>
+          <input type="search" aria-label="Pesquisar por equipamento ou cliente"
+            placeholder="Pesquisar por equipamento ou cliente…" value={search}
+            onChange={event => setSearch(event.target.value)} />
+          <select aria-label="Filtrar por status" value={filter}
+            onChange={event => setFilter(event.target.value)}>
+            <option value="">Status: todos</option>
+            {STATUSES.map(status => <option key={status}>{status}</option>)}
+          </select>
+        </div>
+
+        {loading && <p className={styles.tableMessage} role="status">Carregando empréstimos…</p>}
+        {loadError && (
+          <div className={styles.tableMessage}>
+            <p className={styles.error} role="alert">Não foi possível carregar os empréstimos.</p>
+            <button type="button" className={styles.secondaryButton} onClick={refresh}>
+              Tentar novamente
+            </button>
+          </div>
+        )}
+        {!loading && !loadError && (
+          <div className={styles.tableScroll} role="region" aria-label="Tabela de empréstimos" tabIndex={0}>
+            <table className={styles.table} aria-label="Empréstimos de equipamentos">
+              <thead>
+                <tr>{COLUMNS.map(column => <th key={column} scope="col">{column}</th>)}</tr>
+              </thead>
+              <tbody>
+                {!rows.length && <tr><td colSpan={COLUMNS.length} className={styles.tableMessage}>
+                  Nenhum empréstimo encontrado.
+                </td></tr>}
+                {rows.map(({ loan, status }, index) => (
+                  <tr key={loan.id}>
+                    <td>#{String(index + 1).padStart(3, '0')}</td>
+                    <td>{loan.equipment_name}</td>
+                    <td>{loan.client_name}</td>
+                    <td>{formatLoanDate(loan.loan_date)}</td>
+                    <td>{formatLoanDate(loan.due_date)}</td>
+                    <td>{formatLoanDate(loan.return_date)}</td>
+                    <td><span className={`${styles.badge} ${BADGES[status]}`}>{status}</span></td>
+                    <td>
+                      <div className={styles.actions}>
+                        {status !== 'Devolvido' && (
+                          <button type="button" className={styles.returnButton} disabled={returning}
+                            aria-label={`Dar baixa em ${loan.equipment_name}`}
+                            onClick={() => registerReturn(loan)}>Dar baixa</button>
+                        )}
+                        <button type="button" className={styles.secondaryButton} disabled={returning}
+                          aria-label={`Gerenciar ${loan.equipment_name}`}
+                          onClick={() => setSelected(loan)}>Gerenciar</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {selected && <LoanForm loan={selected} onClose={() => setSelected(null)}
+        onSave={async payload => {
+          const request = supabase.from('loans').update(payload).eq('id', selected.id);
+          await mutate(matchStatus(request, selected).select('id').single(),
+            'Erro ao atualizar empréstimo.', 'Empréstimo atualizado com sucesso.');
+          restoreListFocus.current = true;
+          setSelected(null);
+        }}
+        onDelete={async () => {
+          await mutate(supabase.from('loans').delete().eq('id', selected.id).select('id').single(),
+            'Erro ao excluir empréstimo.', 'Empréstimo excluído com sucesso.');
+          restoreListFocus.current = true;
+          setSelected(null);
+        }} />}
+    </section>
+  );
 }

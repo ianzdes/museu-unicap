@@ -6,7 +6,7 @@
     color: #fff;
     padding: 15px 30px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    font-family: 'roboto', sans-serif;
+    font-family: 'roboto', sans-serif; /* depois mudar a fonte de tudo */
 }
 
 /* Links do menu (<a>): sem sublinhado e sempre brancos, inclusive no hover.
