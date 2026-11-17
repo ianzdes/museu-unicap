@@ -1,9 +1,12 @@
-body {
+html, body {
   margin: 0;
-  font-family: "Roboto", sans-serif;
+  font-family: 'roboto', sans-serif;
   background-color: #f8fafc;
   color: #1e293b;
   -webkit-font-smoothing: antialiased;
+}
+button, input, textarea, select {
+  font-family: inherit;
 }
 
 * {
@@ -11,7 +14,7 @@ body {
 }
 
 button {
-  font-family: "Roboto", sans-serif;
+  font-family: 'roboto', sans-serif;
   cursor: pointer;
 }
 

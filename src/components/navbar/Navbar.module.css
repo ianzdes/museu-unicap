@@ -6,7 +6,15 @@
     color: #fff;
     padding: 15px 30px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    font-family: sans-serif;
+    font-family: 'roboto', sans-serif;
+}
+
+/* Links do menu (<a>): sem sublinhado e sempre brancos, inclusive no hover.
+   Sem isso o navegador aplica o azul e o sublinhado padrão de link (inclusive no logo). */
+.nav a,
+.nav a:hover {
+    color: #fff;
+    text-decoration: none;
 }
 
 .logoContainer {
@@ -30,6 +38,7 @@
     background: none;
     border: none;
     color: #fff;
+    font-family: inherit;
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;
@@ -46,6 +55,7 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
+    font-family: inherit;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
@@ -79,9 +89,11 @@
 }
 
 .dropdownItem {
+    box-sizing: border-box;
     background: none;
     border: none;
     color: #fff;
+    font-family: inherit;
     font-size: 14px;
     text-align: left;
     padding: 10px 16px;

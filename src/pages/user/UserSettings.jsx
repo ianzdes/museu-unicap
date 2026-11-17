@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import styles from './UserSettings.module.css';
@@ -49,8 +48,8 @@ export function UserSettings() {
         setMessage('');
         setError('');
 
-        if (!newPassword || newPassword.length < 6) {
-            setError('A nova senha deve ter pelo menos 6 caracteres.');
+        if (!newPassword || newPassword.length < 14) {
+            setError('A nova senha deve ter pelo menos 14 caracteres.');
             return;
         }
 
@@ -180,7 +179,7 @@ export function UserSettings() {
                                 type="password"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                placeholder="Mínimo de 6 caracteres"
+                                placeholder="Mínimo de 14 caracteres"
                                 className={styles.input}
                             />
                         </div>

@@ -3,7 +3,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: sans-serif;
+  font-family: 'roboto', sans-serif;
 }
 
 .headerRow {
@@ -181,7 +181,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  font-family: sans-serif;
+  font-family: 'roboto', sans-serif;
 }
 
 .formHeader {
@@ -259,7 +259,7 @@
   max-width: 450px;
   padding: 24px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  font-family: sans-serif;
+  font-family: 'roboto', sans-serif;
 }
 
 .modalHeader {

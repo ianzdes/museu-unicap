@@ -1,43 +1,40 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router';
 import { supabase } from './supabaseClient';
-import { Login } from './pages/Login';
-import { Navbar } from './components/Navbar';
+import styles from './App.module.css';
+import { Login } from './pages/login/Login';
+import { Navbar } from './components/navbar/Navbar';
+import { Footer } from './components/footer/Footer';
+import { HomePage } from './pages/homepage/HomePage';
 import { UserRegister } from './pages/management/users/UserRegister';
+import { ClientRegister } from './pages/management/clients/ClientRegister';
+import { UserSettings } from './pages/user/UserSettings';
+import { SupplyRegister } from './pages/patrimony/supply/SupplyRegister';
+import { MachineRegister } from './pages/patrimony/machines/MachineRegister';
+import { LoanRegister } from './pages/patrimony/loan/LoanRegister';
 import { FilamentReport } from './pages/reports/filament/FilamentReport';
 import { MachineUsage } from './pages/reports/usage/MachineUsage';
 import { LoanHistory } from './pages/reports/loan/LoanHistory';
 import { MaintenanceHistory } from './pages/reports/maintenance/MaintenanceHistory';
-import { SupplyRegister } from './pages/patrimony/supply/SupplyRegister';
-import { MachineRegister } from './pages/patrimony/machines/MachineRegister';
-import { LoanRegister } from './pages/patrimony/loan/LoanRegister';
-import { ClientRegister } from './pages/management/clients/ClientRegister';
-import { UserSettings } from './pages/user/UserSettings';
 import { ProductionReport } from './pages/reports/production/ProductionReport';
-import { HomePage } from './pages/homepage/HomePage';
-import { Footer } from './components/Footer';
 
 function App() {
-  const [session, setSession] = useState(null);
-  const [loadingAuth, setLoadingAuth] = useState(true);
-  const [currentRoute, setCurrentRoute] = useState('homepage');
+  // undefined = verificando a sessão | null = deslogado | objeto = logado
+  const [session, setSession] = useState(undefined);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoadingAuth(false);
-    });
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setLoadingAuth(false);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  if (loadingAuth) {
+  if (session === undefined) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif' }}>
+      <div className={styles.loading}>
         <p>Carregando sistema do museu...</p>
       </div>
     );
@@ -47,77 +44,35 @@ function App() {
     return <Login />;
   }
 
-  const renderContent = () => {
-    if (currentRoute.startsWith('register:')) {
-      const registerType = currentRoute.split(':')[1];
-
-      switch (registerType) {
-        case 'supplies':
-          return <SupplyRegister />;
-
-        case 'machines':
-          return <MachineRegister />;
-
-        case 'machine-loan':
-          return <LoanRegister />;
-
-        default:
-          return <div>Cadastro não encontrado.</div>;
-      }
-    }
-
-    if (currentRoute.startsWith('reports:')) {
-      const reportType = currentRoute.split(':')[1];
-
-      switch (reportType) {
-        case 'filament-consumption':
-          return <FilamentReport />;
-
-        case 'machine-usage':
-          return <MachineUsage />;
-
-        case 'loan-history':
-          return <LoanHistory />;
-
-        case 'maintenance-history':
-          return <MaintenanceHistory />;
-
-        case 'production-report':
-          return <ProductionReport />;
-
-        default: 
-          return <div>Relatório não encontrado.</div>;
-      }
-    }
-    
-    switch (currentRoute) {
-      case 'users':
-        return <UserRegister />;
-
-      case 'clients':
-        return <ClientRegister />;
-
-      case 'user-settings':
-        return <UserSettings />;
-
-      case 'homepage':
-        return <HomePage onNavigate={setCurrentRoute}/>;
-
-      default:
-        return <div>Página não encontrada</div>;
-    }
-  };
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-      <Navbar onNavigate={setCurrentRoute} />
+    <BrowserRouter>
+      <div className={styles.layout}>
+        <Navbar />
 
-      <main style={{ padding: '20px' }}>
-        {renderContent()}
-      </main>
+        <main className={styles.main}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/users" element={<UserRegister />} />
+            <Route path="/clients" element={<ClientRegister />} />
+            <Route path="/user-settings" element={<UserSettings />} />
 
-      <Footer onNavigate={setCurrentRoute} />
-    </div>
+            <Route path="/register/supplies" element={<SupplyRegister />} />
+            <Route path="/register/machines" element={<MachineRegister />} />
+            <Route path="/register/machine-loan" element={<LoanRegister />} />
+
+            <Route path="/reports/filament-consumption" element={<FilamentReport />} />
+            <Route path="/reports/machine-usage" element={<MachineUsage />} />
+            <Route path="/reports/loan-history" element={<LoanHistory />} />
+            <Route path="/reports/maintenance-history" element={<MaintenanceHistory />} />
+            <Route path="/reports/production-report" element={<ProductionReport />} />
+
+            <Route path="*" element={<div>Página não encontrada</div>} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
 }
 

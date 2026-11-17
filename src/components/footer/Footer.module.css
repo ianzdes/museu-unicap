@@ -1,7 +1,6 @@
 .footer {
     background-color: #4a000d;
     color: #ffffff;
-    font-family: sans-serif;
     margin-top: auto;
     border-top: 2px solid #8b0000;
 }
@@ -43,28 +42,6 @@
     color: #e2e8f0;
     line-height: 1.5;
     margin: 0;
-}
-
-.linkList {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-}
-
-.linkButton {
-    background: none;
-    border: none;
-    color: #cbd5e1;
-    font-size: 13px;
-    cursor: pointer;
-    padding: 0;
-    text-align: left;
-}
-
-.linkButton:hover {
-    color: #ffffff;
-    text-decoration: underline;
 }
 
 .infoText {
