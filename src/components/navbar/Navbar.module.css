@@ -1,156 +1,142 @@
 .nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #690013;
-    color: #fff;
-    padding: 15px 30px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    font-family: 'roboto', sans-serif; /* depois mudar a fonte de tudo */
+  --nav-bg: #690013;
+  --dropdown-duration: 220ms;
+  --dropdown-easing: cubic-bezier(.2, .7, .25, 1);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 15px clamp(12px, 3vw, 30px);
+  background: var(--nav-bg);
+  color: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  font-family: Roboto, sans-serif;
 }
 
-/* Links do menu (<a>): sem sublinhado e sempre brancos, inclusive no hover.
-   Sem isso o navegador aplica o azul e o sublinhado padrão de link (inclusive no logo). */
-.nav a,
-.nav a:hover {
-    color: #fff;
-    text-decoration: none;
-}
-
-.logoContainer {
-    cursor: pointer;
-}
-
-.logo {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-}
+.nav a { color: inherit; text-decoration: none; }
+.logo { font-size: 1.25rem; font-weight: 700; }
 
 .links {
-    display: flex;
-    gap: 15px;
-    align-items: center;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .navButton {
-    background: none;
-    border: none;
-    color: #fff;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 160ms ease;
 }
 
-.navButton:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+.buttonLabel {
+  max-width: min(13rem, 65vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.userNavButton {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 8px 14px;
-    border-radius: 6px;
-    transition: background-color 0.2s;
+.accountButton {
+  background: rgb(255 255 255 / 10%);
+  border-color: rgb(255 255 255 / 20%);
 }
 
-.userNavButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+.navButton:hover,
+.navButton[aria-expanded='true'],
+.navButton[aria-current='page'],
+.navButton[data-active='true'] { background: rgb(255 255 255 / 18%); }
+
+.chevron { transition: transform var(--dropdown-duration) var(--dropdown-easing); }
+.navButton[aria-expanded='true'] .chevron { transform: rotate(180deg); }
+
+.dropdown { position: relative; max-width: 100%; }
+
+.panel {
+  position: absolute;
+  top: 100%;
+  inset-inline-start: 0;
+  z-index: 100;
+  width: min(16rem, calc(100vw - 24px));
+  padding-top: 6px;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dropdown-duration) var(--dropdown-easing),
+    visibility 0s linear var(--dropdown-duration);
 }
 
-.dropdownContainer {
-    position: relative;
-    display: inline-block;
+.panel[data-open='true'] {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 0s;
 }
 
-.dropdownMenu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: #690013;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-    display: flex;
-    flex-direction: column;
-    min-width: 200px;
-    z-index: 100;
-    padding: 6px 0;
+.panelContent {
+  display: grid;
+  padding: 6px 0;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 8px;
+  background: var(--nav-bg);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 26%);
+  transform: translateY(-6px);
+  transition: transform var(--dropdown-duration) var(--dropdown-easing);
 }
+
+.panel[data-open='true'] .panelContent { transform: translateY(0); }
 
 .dropdownItem {
-    box-sizing: border-box;
-    background: none;
-    border: none;
-    color: #fff;
-    font-family: inherit;
-    font-size: 14px;
-    text-align: left;
-    padding: 10px 16px;
-    cursor: pointer;
-    width: 100%;
-    font-weight: normal;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
 }
 
-.dropdownItem:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+.dropdownItem:hover,
+.dropdownItem[aria-current='page'] { background: rgb(255 255 255 / 15%); }
+.logoutItem { color: #ffc1c1; }
+.dropdownItem:disabled { opacity: .65; cursor: wait; }
+.nav :focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.dropdownItem:focus-visible { outline-offset: -3px; }
+.error { flex-basis: 100%; margin: 0; color: #ffc1c1; }
+
+@media (min-width: 701px) {
+  .dropdown .panel { inset-inline: auto 0; }
 }
 
-.logoutItem {
-    color: #ffb3b3;
+@media (max-width: 700px) {
+  .links { width: 100%; }
+  .dropdown { position: static; }
+  .panel { top: auto; }
+  .navButton { font-size: 14px; padding-inline: 8px; }
 }
 
-@media (max-width: 900px) {
-    .nav {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-        padding: 15px 20px;
-    }
-
-    .links {
-        flex-wrap: wrap;
-        gap: 8px;
-        width: 100%;
-    }
-}
-
-@media (max-width: 600px) {
-    .links {
-        gap: 5px;
-    }
-
-    .navButton,
-    .userNavButton {
-        font-size: 13px;
-        padding: 8px;
-    }
-
-    .dropdownMenu {
-        left: 0;
-        right: auto;
-        min-width: 180px;
-    }
-}
-
-@keyframes dropdownFade {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panelContent,
+  .navButton,
+  .chevron { transition: none; }
+  .panelContent { transform: none; }
 }

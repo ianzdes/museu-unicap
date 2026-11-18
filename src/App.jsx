@@ -52,19 +52,19 @@ function App() {
         <main className={styles.main}>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/users" element={<UserRegister />} />
-            <Route path="/clients" element={<ClientRegister />} />
-            <Route path="/user-settings" element={<UserSettings />} />
+            <Route path="/usuarios" element={<UserRegister />} />
+            <Route path="/clientes" element={<ClientRegister />} />
+            <Route path="/preferencias" element={<UserSettings />} />
 
-            <Route path="/register/supplies" element={<SupplyRegister />} />
-            <Route path="/register/machines" element={<MachineRegister />} />
-            <Route path="/register/machine-loan" element={<LoanRegister />} />
+            <Route path="/cadastros/insumos" element={<SupplyRegister />} />
+            <Route path="/cadastros/maquinas" element={<MachineRegister />} />
+            <Route path="/cadastros/emprestimos" element={<LoanRegister />} />
 
-            <Route path="/reports/filament-consumption" element={<FilamentReport />} />
-            <Route path="/reports/machine-usage" element={<MachineUsage />} />
-            <Route path="/reports/loan-history" element={<LoanHistory />} />
-            <Route path="/reports/maintenance-history" element={<MaintenanceHistory />} />
-            <Route path="/reports/production-report" element={<ProductionReport />} />
+            <Route path="/relatorios/consumo-de-filamentos" element={<FilamentReport />} />
+            <Route path="/relatorios/uso-das-maquinas" element={<MachineUsage />} />
+            <Route path="/relatorios/historico-de-emprestimos" element={<LoanHistory />} />
+            <Route path="/relatorios/historico-de-manutencoes" element={<MaintenanceHistory />} />
+            <Route path="/relatorios/historico-de-producao" element={<ProductionReport />} />
 
             <Route path="*" element={<div>Página não encontrada</div>} />
           </Routes>

@@ -1,136 +1,182 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { useEffect, useId, useRef, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router';
 import { supabase } from '../../supabaseClient';
 import styles from './Navbar.module.css';
 
-// Menus suspensos. Para criar um item novo, basta adicionar uma linha aqui.
 const MENUS = [
-    {
-        id: 'management',
-        label: 'Gestão',
-        items: [
-            { to: '/users', label: 'Usuários (Equipe)' },
-            { to: '/clients', label: 'Clientes (Alunos/Visitantes)' },
-        ],
-    },
-    {
-        id: 'patrimony',
-        label: 'Patrimônio',
-        items: [
-            { to: '/register/machines', label: 'Máquinas (3D / Scanners)' },
-            { to: '/register/machine-loan', label: 'Equipamentos para Empréstimo' },
-            { to: '/register/supplies', label: 'Suprimentos e Insumos' },
-        ],
-    },
-    {
-        id: 'reports',
-        label: 'Relatórios',
-        items: [
-            { to: '/reports/filament-consumption', label: 'Consumo de Filamentos' },
-            { to: '/reports/machine-usage', label: 'Uso das Máquinas' },
-            { to: '/reports/loan-history', label: 'Histórico de Empréstimos' },
-            { to: '/reports/maintenance-history', label: 'Histórico de Manutenções' },
-            { to: '/reports/production-report', label: 'Histórico de Produção' },
-        ],
-    },
+  {
+    id: 'gestao',
+    label: 'Gestão',
+    items: [
+      ['/usuarios', 'Usuários (Equipe)'],
+      ['/clientes', 'Clientes (Alunos/Visitantes)'],
+    ],
+  },
+  {
+    id: 'patrimonio',
+    label: 'Patrimônio',
+    items: [
+      ['/cadastros/maquinas', 'Máquinas (3D / Scanners)'],
+      ['/cadastros/emprestimos', 'Equipamentos para empréstimo'],
+      ['/cadastros/insumos', 'Suprimentos e insumos'],
+    ],
+  },
+  {
+    id: 'relatorios',
+    label: 'Relatórios',
+    items: [
+      ['/relatorios/consumo-de-filamentos', 'Consumo de filamentos'],
+      ['/relatorios/uso-das-maquinas', 'Uso das máquinas'],
+      ['/relatorios/historico-de-emprestimos', 'Histórico de empréstimos'],
+      ['/relatorios/historico-de-manutencoes', 'Histórico de manutenções'],
+      ['/relatorios/historico-de-producao', 'Histórico de produção'],
+    ],
+  },
 ];
 
+function Dropdown({ label, open, active, account, onEnter, onLeave, onToggle, onClose, children }) {
+  const panelId = useId();
+  const button = useRef(null);
+  const panel = useRef(null);
+
+  return (
+    <div className={styles.dropdown}
+      onPointerEnter={event => { if (event.pointerType === 'mouse') onEnter(); }}
+      onPointerLeave={event => {
+        if (event.pointerType === 'mouse' && !panel.current?.contains(document.activeElement)) onLeave();
+      }}
+      onBlur={event => {
+        if (!event.currentTarget.contains(event.relatedTarget)) onClose();
+      }}
+      onKeyDown={event => {
+        if (event.key !== 'Escape' || !open) return;
+        event.stopPropagation();
+        button.current?.focus();
+        onClose();
+      }}>
+      <button ref={button} type="button"
+        className={`${styles.navButton} ${account ? styles.accountButton : ''}`}
+        data-active={active || undefined} aria-expanded={open} aria-controls={panelId}
+        onClick={onToggle}>
+        <span className={styles.buttonLabel}>{label}</span>
+        <span className={styles.chevron} aria-hidden="true">▾</span>
+      </button>
+      <div ref={panel} id={panelId} className={styles.panel} data-open={open}
+        aria-hidden={!open}>
+        <div className={styles.panelContent}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
 export function Navbar() {
-    const navigate = useNavigate();
-    const [openDropdown, setOpenDropdown] = useState(null);
-    const [userName, setUserName] = useState('Usuário');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const nav = useRef(null);
+  const [menu, setMenu] = useState(null);
+  const [userName, setUserName] = useState('Usuário');
+  const [signingOut, setSigningOut] = useState(false);
+  const [logoutError, setLogoutError] = useState('');
 
-    useEffect(() => {
-        async function fetchUser() {
-            const { data: { user } } = await supabase.auth.getUser();
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getUser().then(({ data }) => {
+      const user = data?.user;
+      if (user && !cancelled) {
+        setUserName(user.user_metadata?.name || user.email?.split('@')[0] || 'Usuário');
+      }
+    }, () => {});
+    return () => { cancelled = true; };
+  }, []);
 
-            if (user) {
-                const name = user.user_metadata?.name || user.email.split('@')[0];
-                setUserName(name);
-            }
-        }
+  useEffect(() => {
+    function closeOutside(event) {
+      if (!nav.current?.contains(event.target)) setMenu(null);
+    }
 
-        fetchUser();
-    }, []);
+    function closeHoverWithEscape(event) {
+      if (event.key === 'Escape') {
+        setMenu(current => current?.mode === 'hover' ? null : current);
+      }
+    }
 
-    const closeMenu = () => setOpenDropdown(null);
-
-    // Abre o menu ao passar o mouse e fecha ao sair
-    const hoverProps = (id) => ({
-        onMouseEnter: () => setOpenDropdown(id),
-        onMouseLeave: closeMenu,
-    });
-
-    // Ao sair, a tela de login aparece sozinha (o App percebe que não há mais sessão)
-    const handleLogout = async () => {
-        navigate('/');
-        await supabase.auth.signOut();
+    document.addEventListener('pointerdown', closeOutside);
+    document.addEventListener('keydown', closeHoverWithEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOutside);
+      document.removeEventListener('keydown', closeHoverWithEscape);
     };
+  }, []);
 
-    return (
-        <nav className={styles.nav}>
-            {/* Logo */}
-            <Link to="/" className={styles.logoContainer}>
-                <h1 className={styles.logo}>
-                    Museu (logo)
-                </h1>
-            </Link>
+  async function handleLogout() {
+    if (signingOut) return;
+    setSigningOut(true);
+    setLogoutError('');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setMenu(null);
+      navigate('/');
+    } catch {
+      setLogoutError('Não foi possível sair. Tente novamente.');
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
-            {/* Links de navegação */}
-            <div className={styles.links}>
-                <Link to="/" className={styles.navButton}>
-                    Início
-                </Link>
+  function dropdownProps(id) {
+    const open = menu?.id === id && menu.locationKey === location.key;
+    const close = () => setMenu(current => current?.id === id ? null : current);
+    return {
+      open,
+      onClose: close,
+      onEnter: () => setMenu(current => {
+        if (current?.locationKey === location.key && current.mode === 'click') return current;
+        if (nav.current?.querySelector('[data-open="true"]')?.contains(document.activeElement)) return current;
+        return { id, mode: 'hover', locationKey: location.key };
+      }),
+      onLeave: () => setMenu(current => current?.id === id && current.mode === 'hover' ? null : current),
+      onToggle: () => setMenu(open && menu.mode === 'click'
+        ? null
+        : { id, mode: 'click', locationKey: location.key }),
+    };
+  }
 
-                {MENUS.map((menu) => (
-                    <div key={menu.id} className={styles.dropdownContainer} {...hoverProps(menu.id)}>
-                        <button className={styles.navButton}>
-                            {menu.label} ▾
-                        </button>
+  const account = dropdownProps('conta');
 
-                        {openDropdown === menu.id && (
-                            <div className={styles.dropdownMenu}>
-                                {menu.items.map((item) => (
-                                    <Link
-                                        key={item.to}
-                                        to={item.to}
-                                        onClick={closeMenu}
-                                        className={styles.dropdownItem}
-                                    >
-                                        {item.label}
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                ))}
+  return (
+    <nav ref={nav} className={styles.nav} aria-label="Navegação principal">
+      <NavLink to="/" end className={styles.logo} onClick={() => setMenu(null)}>Museu (logo)</NavLink>
 
-                {/* Menu do usuário */}
-                <div className={styles.dropdownContainer} {...hoverProps('userMenu')}>
-                    <button className={styles.userNavButton}>
-                        {userName} ▾
-                    </button>
+      <div className={styles.links}>
+        <NavLink to="/" end className={styles.navButton} onClick={() => setMenu(null)}>Início</NavLink>
 
-                    {openDropdown === 'userMenu' && (
-                        <div className={styles.dropdownMenu}>
-                            <Link
-                                to="/user-settings"
-                                onClick={closeMenu}
-                                className={styles.dropdownItem}
-                            >
-                                Preferências
-                            </Link>
+        {MENUS.map(({ id, label, items }) => {
+          const dropdown = dropdownProps(id);
+          const active = items.some(([to]) => to === location.pathname);
+          return (
+            <Dropdown key={id} label={label} active={active} {...dropdown}>
+              {items.map(([to, text]) => (
+                <NavLink key={to} to={to} end className={styles.dropdownItem}
+                  tabIndex={dropdown.open ? undefined : -1} onClick={dropdown.onClose}>
+                  {text}
+                </NavLink>
+              ))}
+            </Dropdown>
+          );
+        })}
 
-                            <button
-                                onClick={handleLogout}
-                                className={`${styles.dropdownItem} ${styles.logoutItem}`}
-                            >
-                                Sair (Logout)
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </nav>
-    );
+        <Dropdown label={userName} account active={location.pathname === '/preferencias'} {...account}>
+          <NavLink to="/preferencias" end className={styles.dropdownItem}
+            tabIndex={account.open ? undefined : -1} onClick={account.onClose}>Preferências</NavLink>
+          <button type="button" className={`${styles.dropdownItem} ${styles.logoutItem}`}
+            tabIndex={account.open ? undefined : -1} disabled={signingOut} onClick={handleLogout}>
+            {signingOut ? 'Saindo…' : 'Sair'}
+          </button>
+        </Dropdown>
+      </div>
+
+      {logoutError && <p role="alert" className={styles.error}>{logoutError}</p>}
+    </nav>
+  );
 }
