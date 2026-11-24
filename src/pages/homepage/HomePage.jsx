@@ -8,26 +8,26 @@ const QUICK_ACCESS = [
     {
         title: 'Atendimento & Pessoas',
         links: [
-            { to: '/users', label: 'Gerenciar Usuários →' },
-            { to: '/clients', label: 'Gerenciar Clientes →' },
+            { to: '/usuarios', label: 'Gerenciar Usuários →' },
+            { to: '/clientes', label: 'Gerenciar Clientes →' },
         ],
     },
     {
         title: 'Patrimônio & Estoque',
         links: [
-            { to: '/register/machines', label: 'Máquinas 3D e Scanners →' },
-            { to: '/register/machine-loan', label: 'Equipamentos para Empréstimos →' },
-            { to: '/register/supplies', label: 'Estoque de Filamentos & Resinas →' },
+            { to: '/cadastros/maquinas', label: 'Máquinas 3D e Scanners →' },
+            { to: '/cadastros/emprestimos', label: 'Equipamentos para Empréstimos →' },
+            { to: '/cadastros/insumos', label: 'Estoque de Filamentos & Resinas →' },
         ],
     },
     {
         title: 'Relatórios & Históricos',
         links: [
-            { to: '/reports/filament-consumption', label: 'Consumo de filamentos →' },
-            { to: '/reports/machine-usage', label: 'Uso das Máquinas →' },
-            { to: '/reports/loan-history', label: 'Histórico de Empréstimos →' },
-            { to: '/reports/maintenance-history', label: 'Histórico de Manutenções →' },
-            { to: '/reports/production-report', label: 'Relatório de Produção →' },
+            { to: '/relatorios/consumo-de-filamentos', label: 'Consumo de filamentos →' },
+            { to: '/relatorios/uso-das-maquinas', label: 'Uso das Máquinas →' },
+            { to: '/relatorios/historico-de-emprestimos', label: 'Histórico de Empréstimos →' },
+            { to: '/relatorios/historico-de-manutencoes', label: 'Histórico de Manutenções →' },
+            { to: '/relatorios/historico-de-producao', label: 'Relatório de Produção →' },
         ],
     },
 ];
@@ -101,7 +101,7 @@ export function HomePage() {
             </div>
 
             <div className={styles.metricsGrid}>
-                <Link to="/users" className={styles.metricCard}>
+                <Link to="/usuarios" className={styles.metricCard}>
                     <div className={styles.metricHeader}>
                         <span className={styles.metricTrend}>Equipe</span>
                     </div>
@@ -109,7 +109,7 @@ export function HomePage() {
                     <span className={styles.metricLabel}>Usuários Cadastrados</span>
                 </Link>
 
-                <Link to="/clients" className={styles.metricCard}>
+                <Link to="/clientes" className={styles.metricCard}>
                     <div className={styles.metricHeader}>
                         <span className={styles.metricTrend}>Visitantes</span>
                     </div>
@@ -117,7 +117,7 @@ export function HomePage() {
                     <span className={styles.metricLabel}>Clientes / Alunos</span>
                 </Link>
 
-                <Link to="/register/machines" className={styles.metricCard}>
+                <Link to="/cadastros/maquinas" className={styles.metricCard}>
                     <div className={styles.metricHeader}>
                         <span className={styles.metricTrend}>Patrimônio</span>
                     </div>
@@ -125,7 +125,7 @@ export function HomePage() {
                     <span className={styles.metricLabel}>Máquinas & Equipamentos</span>
                 </Link>
 
-                <Link to="/register/machine-loan" className={styles.metricCard}>
+                <Link to="/cadastros/emprestimos" className={styles.metricCard}>
                     <div className={styles.metricHeader}>
                         <span className={`${styles.metricTrend} ${hasActiveLoans ? styles.trendDanger : styles.trendSuccess}`}>
                             {hasActiveLoans ? 'Em andamento' : 'Regular'}
@@ -135,7 +135,7 @@ export function HomePage() {
                     <span className={styles.metricLabel}>Empréstimos Ativos</span>
                 </Link>
 
-                <Link to="/register/supplies" className={styles.metricCard}>
+                <Link to="/cadastros/insumos" className={styles.metricCard}>
                     <div className={styles.metricHeader}>
                         <span className={`${styles.metricTrend} ${hasLowStock ? styles.trendDanger : styles.trendSuccess}`}>
                             {hasLowStock ? 'Atenção' : 'OK'}

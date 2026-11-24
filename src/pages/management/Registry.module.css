@@ -1,0 +1,95 @@
+.container,
+.formCard {
+  --accent: #8b0000;
+  --border: #e2e8f0;
+  --control-border: #64748b;
+  --text: #334155;
+  --muted: #475569;
+  color: var(--text);
+  font-family: 'Roboto', sans-serif;
+}
+
+.container { max-width: 1200px; margin: auto; padding: clamp(12px, 3vw, 20px); }
+
+.heading,
+.filters,
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.heading { justify-content: space-between; margin-bottom: 20px; }
+.heading :is(h2, h3) { margin: 0; color: #1a1a1a; }
+.category { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+.subtitle { margin: 4px 0 0; color: var(--muted); }
+
+.tableCard,
+.formCard,
+.dialog {
+  box-sizing: border-box;
+  padding: clamp(12px, 4vw, 24px);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 5%);
+}
+
+.formCard,
+.dialog { width: min(450px, calc(100% - 24px)); }
+.formCard { margin: 20px auto; }
+.dialog { max-height: calc(100% - 24px); overflow: auto; color: inherit; }
+.dialog::backdrop { background: rgb(0 0 0 / 50%); }
+
+.filters { margin-bottom: 16px; }
+.filters input { flex: 2 1 220px; }
+.filters select { flex: 1 1 140px; }
+.fields { display: grid; gap: 14px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.fields label { display: grid; gap: 6px; font-weight: 600; }
+.fields :is(input, select) { font-weight: 400; }
+
+:is(.filters, .fields) :is(input, select),
+:is(.container, .formCard) button {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--control-border);
+  border-radius: 6px;
+  background: #fff;
+  color: inherit;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+:is(.container, .formCard) button { color: var(--accent); cursor: pointer; font-weight: 600; }
+:is(.container, .formCard) .primary { background: var(--accent); border-color: transparent; color: #fff; }
+.container .danger { margin-inline-end: auto; background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+:is(.container, .formCard) button:disabled { opacity: .65; cursor: default; }
+:is(.container, .formCard) :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.actions { justify-content: flex-end; gap: 8px; }
+.dialog .actions { padding-top: 12px; border-top: 1px solid var(--border); }
+
+.tableScroll { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.table :is(th, td) { padding: 12px 10px; border-bottom: 1px solid var(--border); }
+.table thead th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+.message { padding: 16px; color: var(--muted); text-align: center; }
+.error { color: #991b1b; font-weight: 600; }
+.notice { padding: 10px 12px; border-radius: 6px; background: #dcfce7; color: #166534; }
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge[data-tone='positive'] { background: #dcfce7; color: #166534; }
+.badge[data-tone='negative'] { background: #fee2e2; color: #991b1b; }
+.badge[data-tone='info'] { background: #e0f2fe; color: #075985; }
