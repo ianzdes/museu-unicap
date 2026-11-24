@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 import { supabase } from '../../supabaseClient';
 import styles from './Navbar.module.css';
+import logo from '../../assets/logo.png';
 
 const MENUS = [
   {
@@ -146,7 +147,9 @@ export function Navbar() {
 
   return (
     <nav ref={nav} className={styles.nav} aria-label="Navegação principal">
-      <NavLink to="/" end className={styles.logo} onClick={() => setMenu(null)}>Museu (logo)</NavLink>
+      <NavLink to="/" end className={styles.logo} onClick={() => setMenu(null)}>
+        <img src={logo} alt="Museu UNICAP, início" className={styles.logoImage} />
+      </NavLink>
 
       <div className={styles.links}>
         <NavLink to="/" end className={styles.navButton} onClick={() => setMenu(null)}>Início</NavLink>
