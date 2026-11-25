@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
 import styles from './UserSettings.module.css';
+import { SupportForm } from './SupportForm';
 
 export function UserSettings() {
     const [userEmail, setUserEmail] = useState('');
@@ -192,7 +193,7 @@ export function UserSettings() {
                         </button>
                     </form>
                 </div>
-
+                <SupportForm />
             </div>
         </div>
     );

@@ -122,12 +122,12 @@
 .dropdownItem:focus-visible { outline-offset: -3px; }
 .error { flex-basis: 100%; margin: 0; color: #ffc1c1; }
 
-.logo {
+.logo { /* link clicável */
   display: inline-flex;
   align-items: center;
 }
 
-.logoImage {
+.logoImage { /* imagem */
   display: block;
   height: 42px;
   width: auto;
